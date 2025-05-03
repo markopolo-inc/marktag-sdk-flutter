@@ -1,9 +1,9 @@
-import 'dart:developer';
-
 import 'package:marktag/src/models/marktag_event.dart';
 import 'package:marktag/src/services/event_service.dart';
 import 'package:marktag/src/services/ip_service.dart';
+import 'package:marktag/src/services/logger_service.dart';
 import 'package:marktag/src/services/payload_service.dart';
+import 'package:marktag/src/services/storage_service.dart';
 import 'package:marktag/src/services/user_service.dart';
 
 /// Flutter SDK for Marktag.
@@ -18,12 +18,26 @@ class Marktag {
     required String tag,
     bool? enableLogging,
   }) {
+    loggerService =
+        LoggerService(name: 'Marktag', enabled: enableLogging ?? true);
+    if (!RegExp(r'^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$').hasMatch(tag)) {
+      loggerService?.debugLog(
+        'Invalid tag: $tag.'
+        ' Tags should be in the format of "tag.website.com"',
+      );
+      return;
+    }
     _tag = tag;
-    _userService = UserService();
-    _eventService = EventService(tag: tag);
+    final storageService = StorageService(logger: loggerService);
+    _userService = UserService(
+      storageService: storageService,
+      logger: loggerService,
+    );
+    _eventService = EventService(tag: tag, logger: loggerService);
     _payloadService = PayloadService(
       userService: _userService,
-      ipService: IPService(),
+      ipService: IPService(logger: loggerService),
+      logger: loggerService,
     );
   }
 
@@ -34,6 +48,9 @@ class Marktag {
 
   /// The [PayloadService] instance.
   PayloadService? _payloadService;
+
+  /// The [LoggerService] instance.
+  LoggerService? loggerService;
 
   /// The [UserService] instance.
   late UserService _userService;
@@ -116,8 +133,9 @@ class Marktag {
 
   /// Sends an event to the Marktag server.
   Future<void> _sendEvent(Map<String, dynamic>? payload) async {
-    if (_tag == null) {
-      log(
+    try {
+      if (_tag == null) {
+        loggerService?.debugLog(
         'Marktag must be initialized with init() before calling any methods',
       );
       return;
@@ -125,7 +143,13 @@ class Marktag {
 
     if (payload == null) {
       return;
+      }
+      await _eventService?.markEvent(payload);
+    } catch (e) {
+      loggerService?.debugLog(
+        'Error sending event: $e',
+        error: e,
+      );
     }
-    await _eventService?.markEvent(payload);
   }
 }

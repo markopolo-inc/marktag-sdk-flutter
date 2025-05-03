@@ -71,7 +71,10 @@ class MarktagNavigatorObserver extends RouteObserver<ModalRoute<dynamic>> {
 
   /// Logs a page view to Marktag.
   void _logPageView(Route<dynamic> route) {
-    const logger = LoggerService(name: 'MarktagNavigatorObserver');
+    final logger = LoggerService(
+      name: 'MarktagNavigatorObserver',
+      enabled: marktag.loggerService?.enabled ?? false,
+    );
     try {
       final screenName = nameExtractor(route.settings);
       if (screenName != null && screenName.isNotEmpty) {

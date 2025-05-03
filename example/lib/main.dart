@@ -4,7 +4,7 @@ import 'package:marktag/marktag.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  Marktag.instance.init(tag: 'mtag-4.markopolo.ai');
+  Marktag.instance.init(tag: 'test-tag.website.com', enableLogging: true);
   runApp(const MyApp());
 }
 

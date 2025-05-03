@@ -12,8 +12,8 @@ class EventService {
   /// Optionally accepts a [LoggerService] for logging.
   EventService({
     required this.tag,
-    this.logger = const LoggerService(name: 'EventService'),
-  });
+    LoggerService? logger,
+  }) : logger = logger ?? LoggerService(name: 'EventService');
 
   /// The MarkTag server tag/domain.
   final String tag;

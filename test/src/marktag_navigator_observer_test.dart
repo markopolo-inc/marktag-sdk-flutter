@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:marktag/src/marktag.dart';
 import 'package:marktag/src/marktag_navigator_observer.dart';
-import 'package:marktag/src/services/logger_service.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockMarktag extends Mock implements Marktag {}
@@ -27,9 +26,6 @@ void main() {
       mockPageRoute = MockPageRoute();
       mockRouteSettings = MockRouteSettings();
 
-      // Disable actual logging during tests
-      LoggerService.enabled = false;
-
       // Setup default route settings
       when(() => mockRouteSettings.name).thenReturn('test_route');
       when(() => mockRoute.settings).thenReturn(mockRouteSettings);
@@ -43,8 +39,6 @@ void main() {
     });
 
     tearDown(() {
-      // Re-enable logging after tests
-      LoggerService.enabled = true;
     });
 
     test('constructor sets default extractors and filters correctly', () {

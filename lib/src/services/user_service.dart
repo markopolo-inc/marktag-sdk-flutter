@@ -18,7 +18,7 @@ class UserService {
     LoggerService? logger,
     Uuid? uuidGenerator,
   })  : _storageService = storageService ?? StorageService(),
-        _logger = logger ?? const LoggerService(name: 'UserService'),
+        _logger = logger ?? LoggerService(name: 'UserService'),
         _uuid = uuidGenerator ?? const Uuid();
 
   static const String _userKey = 'mt_user';

@@ -12,8 +12,8 @@ class PayloadService {
   PayloadService({
     required this.userService,
     required this.ipService,
-    this.logger = const LoggerService(name: 'PayloadService'),
-  });
+    LoggerService? logger,
+  }) : logger = logger ??  LoggerService(name: 'PayloadService');
 
   /// The service used to fetch user information.
   final UserService userService;

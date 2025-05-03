@@ -4,8 +4,6 @@ import 'dart:io';
 import 'package:marktag/src/services/logger_service.dart';
 import 'package:meta/meta.dart';
 
-final _logger = LoggerService(name: 'IPService');
-
 /// Represents IP information including IP address, location, and user agent.
 class IPInfo {
   /// Creates an [IPInfo] instance.
@@ -42,10 +40,14 @@ Map<String, String> parseResponse(String response) {
 /// Service for fetching and caching IP information from Cloudflare.
 class IPService {
   /// Creates an [IPService] with an optional [HttpClient] for testability.
-  IPService({HttpClient? httpClient})
-      : _httpClient = httpClient ?? HttpClient();
+  IPService({
+    HttpClient? httpClient,
+    LoggerService? logger,
+  })  : _httpClient = httpClient ?? HttpClient(),
+        _logger = logger ?? LoggerService(name: 'IPService');
   static IPInfo? _ipInfo;
   final HttpClient _httpClient;
+  final LoggerService _logger;
 
   /// Gets the IP information, fetching from the network if not cached.
   ///
