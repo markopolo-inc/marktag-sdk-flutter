@@ -227,6 +227,110 @@ void main() {
         });
       });
 
+      test('calls setUser when email or phone is provided in the event',
+          () async {
+        // Arrange
+        const testUser = User(
+          muid: 'test-muid',
+          email: 'updated@example.com',
+          phone: '9876543210',
+        );
+        final testIpInfo = IPInfo(
+          ip: '1.2.3.4',
+          loc: 'US',
+          uag: 'test-agent',
+        );
+        const testEvent = MarkTagEvent(
+          event: 'test_event',
+          email: 'updated@example.com',
+          phone: '9876543210',
+        );
+
+        when(
+          () => mockUserService.setUser(
+            email: testEvent.email,
+            phone: testEvent.phone,
+          ),
+        ).thenAnswer((_) async {});
+        when(() => mockUserService.getUser()).thenAnswer((_) async => testUser);
+        when(() => mockIPService.getIpInfo())
+            .thenAnswer((_) async => testIpInfo);
+        when(() => mockLogger.debugLog(any())).thenReturn(null);
+
+        // Act
+        final result = await payloadService.createPayload(testEvent);
+
+        // Assert
+        verify(
+          () => mockUserService.setUser(
+            email: testEvent.email,
+            phone: testEvent.phone,
+          ),
+        ).called(1);
+        verify(() => mockUserService.getUser()).called(1);
+        verify(() => mockIPService.getIpInfo()).called(1);
+        verify(() => mockLogger.debugLog(any())).called(1);
+
+        expect(result, {
+          'x-cf-ip': '1.2.3.4',
+          'x-cf-loc': 'US',
+          'event_source': 'mobile',
+          'muid': 'test-muid',
+          'email': 'updated@example.com',
+          'phone': '9876543210',
+          'pageUrl': null,
+          'event': 'test_event',
+          'products': null,
+        });
+      });
+
+      test(
+          'does not call setUser when email and phone are not provided in the event',
+          () async {
+        // Arrange
+        const testUser = User(
+          muid: 'test-muid',
+        );
+        final testIpInfo = IPInfo(
+          ip: '1.2.3.4',
+          loc: 'US',
+          uag: 'test-agent',
+        );
+        const testEvent = MarkTagEvent(
+          event: 'test_event',
+          // No email or phone provided
+        );
+
+        when(() => mockUserService.getUser()).thenAnswer((_) async => testUser);
+        when(() => mockIPService.getIpInfo())
+            .thenAnswer((_) async => testIpInfo);
+        when(() => mockLogger.debugLog(any())).thenReturn(null);
+
+        // Act
+        final result = await payloadService.createPayload(testEvent);
+
+        // Assert
+        verifyNever(
+          () => mockUserService.setUser(
+            email: any(named: 'email'),
+            phone: any(named: 'phone'),
+          ),
+        );
+        verify(() => mockUserService.getUser()).called(1);
+        verify(() => mockIPService.getIpInfo()).called(1);
+        verify(() => mockLogger.debugLog(any())).called(1);
+
+        expect(result, {
+          'x-cf-ip': '1.2.3.4',
+          'x-cf-loc': 'US',
+          'event_source': 'mobile',
+          'muid': 'test-muid',
+          'pageUrl': null,
+          'event': 'test_event',
+          'products': null,
+        });
+      });
+
       test('propagates exceptions from userService', () async {
         // Arrange
         const testEvent = MarkTagEvent(
