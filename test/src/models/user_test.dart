@@ -67,5 +67,35 @@ void main() {
       final user2 = User.fromJson(json);
       expect(user2, user);
     });
+
+    test('hashCode returns consistent values for equal objects', () {
+      const user1 = User(
+        muid: 'abc123',
+        email: 'a@b.com',
+        phone: '123',
+        name: 'Test User',
+      );
+      const user2 = User(
+        muid: 'abc123',
+        email: 'a@b.com',
+        phone: '123',
+        name: 'Test User',
+      );
+      const differentUser = User(
+        muid: 'def456',
+        email: 'c@d.com',
+        phone: '456',
+        name: 'Other User',
+      );
+
+      expect(user1.hashCode, user2.hashCode);
+      expect(user1.hashCode, isNot(differentUser.hashCode));
+
+      // Verify that Object.hash is being used correctly with all fields
+      expect(
+        user1.hashCode,
+        Object.hash(user1.muid, user1.email, user1.phone, user1.name),
+      );
+    });
   });
 }
