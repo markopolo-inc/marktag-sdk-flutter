@@ -3,7 +3,7 @@ import 'dart:developer';
 /// A service for logging messages.
 class LoggerService {
   /// Creates a [LoggerService] instance.
-  LoggerService({required this.name});
+  const LoggerService({required this.name});
 
   /// A static field to enable or disable logging.
   static bool enabled = true;

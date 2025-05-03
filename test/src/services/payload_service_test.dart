@@ -1,0 +1,245 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:marktag/src/models/marktag_event.dart';
+import 'package:marktag/src/models/user.dart';
+import 'package:marktag/src/services/ip_service.dart';
+import 'package:marktag/src/services/logger_service.dart';
+import 'package:marktag/src/services/payload_service.dart';
+import 'package:marktag/src/services/user_service.dart';
+import 'package:mocktail/mocktail.dart';
+
+class MockUserService extends Mock implements UserService {}
+
+class MockIPService extends Mock implements IPService {}
+
+class MockLoggerService extends Mock implements LoggerService {}
+
+void main() {
+  late PayloadService payloadService;
+  late MockUserService mockUserService;
+  late MockIPService mockIPService;
+  late MockLoggerService mockLogger;
+
+  setUp(() {
+    mockUserService = MockUserService();
+    mockIPService = MockIPService();
+    mockLogger = MockLoggerService();
+    payloadService = PayloadService(
+      userService: mockUserService,
+      ipService: mockIPService,
+      logger: mockLogger,
+    );
+  });
+
+  group('PayloadService', () {
+    test('constructor initializes dependencies correctly', () {
+      expect(payloadService.userService, equals(mockUserService));
+      expect(payloadService.ipService, equals(mockIPService));
+      expect(payloadService.logger, equals(mockLogger));
+    });
+
+    group('createPayload', () {
+      test('creates payload with all event data correctly', () async {
+        // Arrange
+        const testUser = User(
+          muid: 'test-muid',
+          email: 'test@example.com',
+          phone: '1234567890',
+        );
+        final testIpInfo = IPInfo(
+          ip: '1.2.3.4',
+          loc: 'US',
+          uag: 'test-agent',
+        );
+        const testEvent = MarkTagEvent(
+          event: 'test_event',
+          items: [
+            MarkTagEventItem(
+              id: 'test-id',
+              name: 'Test Product',
+              category: 'Test Category',
+              price: 9.99,
+              quantity: 2,
+            ),
+          ],
+          metadata: {'custom_key': 'custom_value'},
+        );
+
+        when(() => mockUserService.getUser()).thenAnswer((_) async => testUser);
+        when(() => mockIPService.getIpInfo())
+            .thenAnswer((_) async => testIpInfo);
+        // We need to allow any debugLog calls
+        when(() => mockLogger.debugLog(any())).thenReturn(null);
+
+        // Act
+        final result = await payloadService.createPayload(testEvent);
+
+        // Assert
+        verify(() => mockUserService.getUser()).called(1);
+        verify(() => mockIPService.getIpInfo()).called(1);
+        verify(() => mockLogger.debugLog(any())).called(1);
+
+        expect(result, {
+          'x-cf-ip': '1.2.3.4',
+          'x-cf-loc': 'US',
+          'event_source': 'mobile',
+          'muid': 'test-muid',
+          'email': 'test@example.com',
+          'phone': '1234567890',
+          'event': 'test_event',
+          'products': [
+            {
+              'id': 'test-id',
+              'name': 'Test Product',
+              'category': 'Test Category',
+              'price': 9.99,
+              'quantity': 2,
+            },
+          ],
+          'custom_key': 'custom_value',
+        });
+      });
+
+      test('creates payload without optional event data', () async {
+        // Arrange
+        const testUser = User(
+          muid: 'test-muid',
+        );
+        final testIpInfo = IPInfo(
+          ip: '1.2.3.4',
+          loc: 'US',
+          uag: 'test-agent',
+        );
+        const testEvent = MarkTagEvent(
+          event: 'test_event',
+        );
+
+        when(() => mockUserService.getUser()).thenAnswer((_) async => testUser);
+        when(() => mockIPService.getIpInfo())
+            .thenAnswer((_) async => testIpInfo);
+        when(() => mockLogger.debugLog(any())).thenReturn(null);
+
+        // Act
+        final result = await payloadService.createPayload(testEvent);
+
+        // Assert
+        verify(() => mockUserService.getUser()).called(1);
+        verify(() => mockIPService.getIpInfo()).called(1);
+        verify(() => mockLogger.debugLog(any())).called(1);
+
+        expect(result, {
+          'x-cf-ip': '1.2.3.4',
+          'x-cf-loc': 'US',
+          'event_source': 'mobile',
+          'muid': 'test-muid',
+          'event': 'test_event',
+          'products': null,
+        });
+      });
+
+      test('creates payload with items but no metadata', () async {
+        // Arrange
+        const testUser = User(
+          muid: 'test-muid',
+        );
+        final testIpInfo = IPInfo(
+          ip: '1.2.3.4',
+          loc: 'US',
+          uag: 'test-agent',
+        );
+        const testEvent = MarkTagEvent(
+          event: 'test_event',
+          items: [
+            MarkTagEventItem(
+              id: 'item-1',
+            ),
+          ],
+        );
+
+        when(() => mockUserService.getUser()).thenAnswer((_) async => testUser);
+        when(() => mockIPService.getIpInfo())
+            .thenAnswer((_) async => testIpInfo);
+        when(() => mockLogger.debugLog(any())).thenReturn(null);
+
+        // Act
+        final result = await payloadService.createPayload(testEvent);
+
+        // Assert
+        verify(() => mockUserService.getUser()).called(1);
+        verify(() => mockIPService.getIpInfo()).called(1);
+        verify(() => mockLogger.debugLog(any())).called(1);
+
+        expect(result, {
+          'x-cf-ip': '1.2.3.4',
+          'x-cf-loc': 'US',
+          'event_source': 'mobile',
+          'muid': 'test-muid',
+          'event': 'test_event',
+          'products': [
+            {
+              'id': 'item-1',
+            },
+          ],
+        });
+      });
+
+      test('creates payload with metadata but no items', () async {
+        // Arrange
+        const testUser = User(
+          muid: 'test-muid',
+        );
+        final testIpInfo = IPInfo(
+          ip: '1.2.3.4',
+          loc: 'US',
+          uag: 'test-agent',
+        );
+        const testEvent = MarkTagEvent(
+          event: 'test_event',
+          metadata: {'key1': 'value1', 'key2': 42},
+        );
+
+        when(() => mockUserService.getUser()).thenAnswer((_) async => testUser);
+        when(() => mockIPService.getIpInfo())
+            .thenAnswer((_) async => testIpInfo);
+        when(() => mockLogger.debugLog(any())).thenReturn(null);
+
+        // Act
+        final result = await payloadService.createPayload(testEvent);
+
+        // Assert
+        verify(() => mockUserService.getUser()).called(1);
+        verify(() => mockIPService.getIpInfo()).called(1);
+        verify(() => mockLogger.debugLog(any())).called(1);
+
+        expect(result, {
+          'x-cf-ip': '1.2.3.4',
+          'x-cf-loc': 'US',
+          'event_source': 'mobile',
+          'muid': 'test-muid',
+          'event': 'test_event',
+          'products': null,
+          'key1': 'value1',
+          'key2': 42,
+        });
+      });
+
+      test('propagates exceptions from userService', () async {
+        // Arrange
+        const testEvent = MarkTagEvent(
+          event: 'test_event',
+        );
+        final testException = Exception('User service error');
+
+        when(() => mockUserService.getUser()).thenThrow(testException);
+
+        // Act & Assert
+        expect(
+          () => payloadService.createPayload(testEvent),
+          throwsA(equals(testException)),
+        );
+        verify(() => mockUserService.getUser()).called(1);
+        verifyNever(() => mockIPService.getIpInfo());
+        verifyNever(() => mockLogger.debugLog(any()));
+      });
+    });
+  });
+}
