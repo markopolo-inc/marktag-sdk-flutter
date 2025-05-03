@@ -18,4 +18,5 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   mocktail: ^1.0.4
+  test_coverage_badge: ^0.3.2
   very_good_analysis: ^6.0.0
