@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:marktag/src/services/ip_service.dart';
@@ -50,6 +51,36 @@ void main() {
       service = IPService(httpClient: mockHttpClient);
       // Reset static cache before each test
       IPService.resetCache();
+    });
+
+    group('constructor', () {
+      test('uses provided HttpClient when specified', () {
+        final customClient = MockHttpClient();
+        final service = IPService(httpClient: customClient);
+
+        // Set up the mock to verify it's used
+        when(() => customClient.getUrl(any()))
+            .thenAnswer((_) async => mockRequest);
+        when(() => mockRequest.close()).thenAnswer((_) async => mockResponse);
+        when(() => mockResponse.statusCode).thenReturn(200);
+        when(() => mockResponse.transform(utf8.decoder)).thenAnswer(
+          (_) => Stream<List<int>>.fromIterable([
+            utf8.encode('ip=1.1.1.1\nloc=US\nuag=test\n'),
+          ]).transform(utf8.decoder),
+        );
+
+        // Call a method that uses the HttpClient
+        service.getIpInfo();
+
+        // Verify the provided client was used
+        verify(() => customClient.getUrl(any())).called(1);
+      });
+
+      test('creates new HttpClient when not specified', () {
+        // This test is more challenging as we can't mock the default HttpClient
+        // But we can at least verify the constructor doesn't throw
+        expect(IPService.new, returnsNormally);
+      });
     });
 
     test('returns IPInfo on valid response', () async {
