@@ -74,7 +74,8 @@ void main() {
     test('creates service with default logger when none provided', () {
       // Just verifying that constructor doesn't throw an exception
       expect(() => StorageService(sharedPreferences: MockSharedPreferences()),
-          returnsNormally);
+        returnsNormally,
+      );
     });
 
     test('uses SharedPreferences.getInstance() when no instance provided',
