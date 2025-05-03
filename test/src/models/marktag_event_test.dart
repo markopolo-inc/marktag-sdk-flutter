@@ -28,6 +28,19 @@ void main() {
       expect(item.toJson(), json);
     });
 
+    test('fromJson handles integer values for price and discount', () {
+      final json = {
+        'id': '123',
+        'price': 8,
+        'discount': 2,
+      };
+      final item = MarkTagEventItem.fromJson(json);
+      expect(item.price, 8.0);
+      expect(item.price, isA<double>());
+      expect(item.discount, 2.0);
+      expect(item.discount, isA<double>());
+    });
+
     test('copyWith returns a new instance with updated values', () {
       const item = MarkTagEventItem(
         id: '1',
@@ -38,6 +51,19 @@ void main() {
       expect(updated.id, '1');
       expect(updated.name, 'Pants');
       expect(updated.price, 20.0);
+      expect(updated, isNot(same(item)));
+    });
+
+    test('copyWith preserves original values when null is passed', () {
+      const item = MarkTagEventItem(
+        id: '1',
+        name: 'Shirt',
+        price: 10,
+      );
+      final updated = item.copyWith();
+      expect(updated.id, '1');
+      expect(updated.name, 'Shirt');
+      expect(updated.price, 10.0);
       expect(updated, isNot(same(item)));
     });
   });
@@ -88,6 +114,17 @@ void main() {
       expect(updated.event, 'purchase');
       expect(updated.pageUrl, isNull);
       expect(updated.email, 'test@example.com');
+      expect(updated, isNot(same(event)));
+    });
+
+    test('copyWith preserves original values when null is passed', () {
+      const event = MarkTagEvent(
+        event: 'add_to_cart',
+        email: 'original@example.com',
+      );
+      final updated = event.copyWith();
+      expect(updated.event, 'add_to_cart');
+      expect(updated.email, 'original@example.com');
       expect(updated, isNot(same(event)));
     });
 
