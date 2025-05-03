@@ -50,11 +50,11 @@ void main() {
           loc: 'US',
           uag: 'test-agent',
         );
-        const testEvent = MarkTagEvent(
+        const testEvent = MarktagEvent(
           event: 'test_event',
           pageUrl: 'https://test.com/page',
           items: [
-            MarkTagEventItem(
+            MarktagEventItem(
               id: 'test-id',
               name: 'Test Product',
               category: 'Test Category',
@@ -88,6 +88,7 @@ void main() {
           'phone': '1234567890',
           'pageUrl': 'https://test.com/page',
           'event': 'test_event',
+          'deviceId': null,
           'products': [
             {
               'id': 'test-id',
@@ -111,7 +112,7 @@ void main() {
           loc: 'US',
           uag: 'test-agent',
         );
-        const testEvent = MarkTagEvent(
+        const testEvent = MarktagEvent(
           event: 'test_event',
         );
 
@@ -136,6 +137,7 @@ void main() {
           'pageUrl': null,
           'event': 'test_event',
           'products': null,
+          'deviceId': null,
         });
       });
 
@@ -149,10 +151,10 @@ void main() {
           loc: 'US',
           uag: 'test-agent',
         );
-        const testEvent = MarkTagEvent(
+        const testEvent = MarktagEvent(
           event: 'test_event',
           items: [
-            MarkTagEventItem(
+            MarktagEventItem(
               id: 'item-1',
             ),
           ],
@@ -183,6 +185,7 @@ void main() {
               'id': 'item-1',
             },
           ],
+          'deviceId': null,
         });
       });
 
@@ -196,7 +199,7 @@ void main() {
           loc: 'US',
           uag: 'test-agent',
         );
-        const testEvent = MarkTagEvent(
+        const testEvent = MarktagEvent(
           event: 'test_event',
           metadata: {'key1': 'value1', 'key2': 42},
         );
@@ -224,6 +227,7 @@ void main() {
           'products': null,
           'key1': 'value1',
           'key2': 42,
+          'deviceId': null,
         });
       });
 
@@ -240,7 +244,7 @@ void main() {
           loc: 'US',
           uag: 'test-agent',
         );
-        const testEvent = MarkTagEvent(
+        const testEvent = MarktagEvent(
           event: 'test_event',
           email: 'updated@example.com',
           phone: '9876543210',
@@ -281,6 +285,7 @@ void main() {
           'pageUrl': null,
           'event': 'test_event',
           'products': null,
+          'deviceId': null,
         });
       });
 
@@ -296,7 +301,7 @@ void main() {
           loc: 'US',
           uag: 'test-agent',
         );
-        const testEvent = MarkTagEvent(
+        const testEvent = MarktagEvent(
           event: 'test_event',
           // No email or phone provided
         );
@@ -328,12 +333,13 @@ void main() {
           'pageUrl': null,
           'event': 'test_event',
           'products': null,
+          'deviceId': null,
         });
       });
 
       test('propagates exceptions from userService', () async {
         // Arrange
-        const testEvent = MarkTagEvent(
+        const testEvent = MarktagEvent(
           event: 'test_event',
         );
         final testException = Exception('User service error');

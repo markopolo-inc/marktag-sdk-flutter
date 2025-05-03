@@ -1,8 +1,8 @@
-/// Represents an item involved in a MarkTag event, 
+/// Represents an item involved in a Marktag event, 
 /// such as a product in a cart or purchase.
-class MarkTagEventItem {
-  /// Creates a [MarkTagEventItem].
-  const MarkTagEventItem({
+class MarktagEventItem {
+  /// Creates a [MarktagEventItem].
+  const MarktagEventItem({
     this.id,
     this.name,
     this.category,
@@ -14,9 +14,9 @@ class MarkTagEventItem {
     this.discount,
   });
 
-  /// Creates a [MarkTagEventItem] from a JSON map.
-  factory MarkTagEventItem.fromJson(Map<String, dynamic> json) {
-    return MarkTagEventItem(
+  /// Creates a [MarktagEventItem] from a JSON map.
+  factory MarktagEventItem.fromJson(Map<String, dynamic> json) {
+    return MarktagEventItem(
       id: json['id'] as String?,
       name: json['name'] as String?,
       category: json['category'] as String?,
@@ -63,7 +63,7 @@ class MarkTagEventItem {
   /// you need to convert the percentage to monetary value
   final double? discount;
 
-  /// Converts this [MarkTagEventItem] to a JSON map.
+  /// Converts this [MarktagEventItem] to a JSON map.
   Map<String, dynamic> toJson() => {
         if (id != null) 'id': id,
         if (name != null) 'name': name,
@@ -78,7 +78,7 @@ class MarkTagEventItem {
 
   /// Returns a copy of this item with the given fields 
   /// replaced with new values.
-  MarkTagEventItem copyWith({
+  MarktagEventItem copyWith({
     String? id,
     String? name,
     String? category,
@@ -89,7 +89,7 @@ class MarkTagEventItem {
     String? coupon,
     double? discount,
   }) {
-    return MarkTagEventItem(
+    return MarktagEventItem(
       id: id ?? this.id,
       name: name ?? this.name,
       category: category ?? this.category,
@@ -103,10 +103,10 @@ class MarkTagEventItem {
   }
 }
 
-/// Represents a MarkTag event, such as a page view, add to cart, or purchase.
-class MarkTagEvent {
-  /// Creates a [MarkTagEvent].
-  const MarkTagEvent({
+/// Represents a Marktag event, such as a page view, add to cart, or purchase.
+class MarktagEvent {
+  /// Creates a [MarktagEvent].
+  const MarktagEvent({
     required this.event,
     this.pageUrl,
     this.eventSource,
@@ -117,9 +117,9 @@ class MarkTagEvent {
     this.metadata,
   });
 
-  /// Creates a [MarkTagEvent] from a JSON map.
-  factory MarkTagEvent.fromJson(Map<String, dynamic> json) {
-    return MarkTagEvent(
+  /// Creates a [MarktagEvent] from a JSON map.
+  factory MarktagEvent.fromJson(Map<String, dynamic> json) {
+    return MarktagEvent(
       event: json['event'] as String,
       eventSource: json['event_source'] as String?,
       pageUrl: json['pageUrl'] as String?,
@@ -127,7 +127,7 @@ class MarkTagEvent {
       phone: json['phone'] as String?,
       mtRefSrc: json['mt_ref_src'] as String?,
       items: (json['items'] as List?)
-          ?.map((e) => MarkTagEventItem.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => MarktagEventItem.fromJson(e as Map<String, dynamic>))
           .toList(),
       metadata: json['metadata'] != null
           ? Map<String, dynamic>.from(json['metadata'] as Map)
@@ -150,16 +150,16 @@ class MarkTagEvent {
   /// The phone number associated with the event (optional).
   final String? phone;
 
-  /// The MarkTag reference source (optional).
+  /// The Marktag reference source (optional).
   final String? mtRefSrc;
 
   /// The list of items involved in the event (optional).
-  final List<MarkTagEventItem>? items;
+  final List<MarktagEventItem>? items;
 
   /// Additional metadata for the event (optional).
   final Map<String, dynamic>? metadata;
 
-  /// Converts this [MarkTagEvent] to a JSON map.
+  /// Converts this [MarktagEvent] to a JSON map.
   Map<String, dynamic> toJson() => {
         'event': event,
         if (eventSource != null) 'event_source': eventSource,
@@ -173,17 +173,17 @@ class MarkTagEvent {
 
   /// Returns a copy of this event with the given fields 
   /// replaced with new values.
-  MarkTagEvent copyWith({
+  MarktagEvent copyWith({
     String? event,
     String? eventSource,
     String? pageUrl,
     String? email,
     String? phone,
     String? mtRefSrc,
-    List<MarkTagEventItem>? items,
+    List<MarktagEventItem>? items,
     Map<String, dynamic>? metadata,
   }) {
-    return MarkTagEvent(
+    return MarktagEvent(
       event: event ?? this.event,
       eventSource: eventSource ?? this.eventSource,
       pageUrl: pageUrl ?? this.pageUrl,

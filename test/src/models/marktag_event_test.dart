@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:marktag/src/models/marktag_event.dart';
 
 void main() {
-  group('MarkTagEventItem', () {
+  group('MarktagEventItem', () {
     test('fromJson and toJson work correctly', () {
       final json = {
         'id': '123',
@@ -15,7 +15,7 @@ void main() {
         'coupon': 'DISCOUNT5',
         'discount': 5.0,
       };
-      final item = MarkTagEventItem.fromJson(json);
+      final item = MarktagEventItem.fromJson(json);
       expect(item.id, '123');
       expect(item.name, 'Shirt');
       expect(item.category, "Apparel, Men's Clothing");
@@ -34,7 +34,7 @@ void main() {
         'price': 8,
         'discount': 2,
       };
-      final item = MarkTagEventItem.fromJson(json);
+      final item = MarktagEventItem.fromJson(json);
       expect(item.price, 8.0);
       expect(item.price, isA<double>());
       expect(item.discount, 2.0);
@@ -42,7 +42,7 @@ void main() {
     });
 
     test('copyWith returns a new instance with updated values', () {
-      const item = MarkTagEventItem(
+      const item = MarktagEventItem(
         id: '1',
         name: 'Shirt',
         price: 10,
@@ -55,7 +55,7 @@ void main() {
     });
 
     test('copyWith preserves original values when null is passed', () {
-      const item = MarkTagEventItem(
+      const item = MarktagEventItem(
         id: '1',
         name: 'Shirt',
         price: 10,
@@ -68,7 +68,7 @@ void main() {
     });
   });
 
-  group('MarkTagEvent', () {
+  group('MarktagEvent', () {
     test('fromJson and toJson work correctly', () {
       final json = {
         'event': 'purchase',
@@ -92,7 +92,7 @@ void main() {
         ],
         'metadata': {'foo': 'bar', 'baz': 1},
       };
-      final event = MarkTagEvent.fromJson(json);
+      final event = MarktagEvent.fromJson(json);
       expect(event.event, 'purchase');
       expect(event.eventSource, 'web');
       expect(event.pageUrl, 'https://example.com');
@@ -106,7 +106,7 @@ void main() {
     });
 
     test('copyWith returns a new instance with updated values', () {
-      const event = MarkTagEvent(
+      const event = MarktagEvent(
         event: 'add_to_cart',
       );
       final updated =
@@ -118,7 +118,7 @@ void main() {
     });
 
     test('copyWith preserves original values when null is passed', () {
-      const event = MarkTagEvent(
+      const event = MarktagEvent(
         event: 'add_to_cart',
         email: 'original@example.com',
       );
@@ -133,7 +133,7 @@ void main() {
         'event': 'view',
         // pageUrl is omitted
       };
-      final event = MarkTagEvent.fromJson(json);
+      final event = MarktagEvent.fromJson(json);
       expect(event.pageUrl, isNull);
       expect(event.event, 'view');
       expect(event.toJson(), {'event': 'view'});

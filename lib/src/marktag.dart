@@ -56,7 +56,7 @@ class Marktag {
   late UserService _userService;
 
   /// Logs an event to the Marktag server.
-  Future<void> logEvent(MarkTagEvent event) async {
+  Future<void> logEvent(MarktagEvent event) async {
     final payload = await _payloadService?.createPayload(event);
     await _sendEvent(payload);
   }
@@ -77,7 +77,7 @@ class Marktag {
     String? phone,
   }) async {
     await _userService.setUser(email: email, name: name, phone: phone);
-    final event = MarkTagEvent(
+    final event = MarktagEvent(
       event: 'Login',
       metadata: {
         'email': email,
@@ -91,7 +91,7 @@ class Marktag {
 
   /// Logs a search event.
   Future<void> logSearch(String searchText) async {
-    final event = MarkTagEvent(
+    final event = MarktagEvent(
       event: 'Search',
       metadata: {
         'search_term': searchText,
@@ -109,7 +109,7 @@ class Marktag {
     String? phone,
   }) async {
     await _userService.setUser(email: email, name: name, phone: phone);
-    final event = MarkTagEvent(
+    final event = MarktagEvent(
       event: 'Signup',
       metadata: {
         'email': email,
@@ -123,7 +123,7 @@ class Marktag {
 
   /// Logs a page view event.
   Future<void> logPageView(String page) async {
-    final event = MarkTagEvent(
+    final event = MarktagEvent(
       event: 'PageView',
       pageUrl: page,
     );

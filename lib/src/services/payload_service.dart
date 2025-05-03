@@ -31,7 +31,7 @@ class PayloadService {
   ///
   /// The payload includes user information, IP information, and event details.
   /// Returns a [Future] that completes with the payload as a [Map].
-  Future<Map<String, dynamic>> createPayload(MarkTagEvent event) async {
+  Future<Map<String, dynamic>> createPayload(MarktagEvent event) async {
     if (event.email != null || event.phone != null) {
       await userService.setUser(
         email: event.email,

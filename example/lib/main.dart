@@ -60,7 +60,7 @@ class HomePage extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 Marktag.instance.logEvent(
-                  MarkTagEvent(
+                  MarktagEvent(
                     event: 'TestEvent',
                     metadata: {'sdk': 'flutter'},
                   ),
@@ -71,11 +71,11 @@ class HomePage extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 Marktag.instance.logEvent(
-                  MarkTagEvent(
+                  MarktagEvent(
                     event: 'ViewItem',
                     pageUrl: '/',
                     items: [
-                      MarkTagEventItem(
+                      MarktagEventItem(
                         id: '123',
                         name: 'Test Item',
                         price: 100,
