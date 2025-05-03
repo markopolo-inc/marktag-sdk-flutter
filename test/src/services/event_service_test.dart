@@ -64,7 +64,7 @@ void main() {
         when(() => mockHeaders.set(any(), any())).thenReturn(null);
         when(() => mockRequest.write(any())).thenReturn(null);
         when(() => mockRequest.close()).thenAnswer((_) async => mockResponse);
-        when(() => mockResponse.statusCode).thenReturn(200);
+        when(() => mockResponse.statusCode).thenReturn(201);
         when(
           () => mockResponse.listen(
             any(),

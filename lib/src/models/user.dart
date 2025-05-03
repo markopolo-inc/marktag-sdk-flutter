@@ -13,6 +13,7 @@ class User {
     required this.muid,
     this.email,
     this.phone,
+    this.name,
   });
 
   /// Creates a [User] from a JSON map.
@@ -26,6 +27,7 @@ class User {
       muid: json['muid'] as String,
       email: json['email'] as String?,
       phone: json['phone'] as String?,
+      name: json['name'] as String?,
     );
   }
 
@@ -38,6 +40,9 @@ class User {
   /// The user's phone number (optional).
   final String? phone;
 
+  /// The user's name (optional).
+  final String? name;
+
   /// Returns a string representation of the user.
   @override
   String toString() => 'User(muid: $muid, email: $email, phone: $phone)';
@@ -49,15 +54,19 @@ class User {
     final map = <String, dynamic>{'muid': muid};
     if (email != null) map['email'] = email;
     if (phone != null) map['phone'] = phone;
+    if (name != null) map['name'] = name;
     return map;
   }
 
   @override
   bool operator ==(Object other) {
     if (other is! User) return false;
-    return muid == other.muid && email == other.email && phone == other.phone;
+    return muid == other.muid &&
+        email == other.email &&
+        phone == other.phone &&
+        name == other.name;
   }
 
   @override
-  int get hashCode => Object.hash(muid, email, phone);
+  int get hashCode => Object.hash(muid, email, phone, name);
 }

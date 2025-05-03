@@ -18,7 +18,7 @@ class UserService {
     LoggerService? logger,
     Uuid? uuidGenerator,
   })  : _storageService = storageService ?? StorageService(),
-        _logger = logger ?? LoggerService(name: 'UserService'),
+        _logger = logger ?? const LoggerService(name: 'UserService'),
         _uuid = uuidGenerator ?? const Uuid();
 
   static const String _userKey = 'mt_user';
@@ -78,15 +78,21 @@ class UserService {
   ///
   /// If no user exists, a new one is created with a generated muid.
   /// Throws and logs any error encountered.
-  Future<void> setUser({String? email, String? phone}) async {
+  Future<void> setUser({String? email, String? phone, String? name}) async {
     try {
       final userStr = await _storageService.getString(_userKey);
       User updatedUser;
       if (userStr != null) {
         final existing = User.fromJson(_decodeJson(userStr));
-        updatedUser = User(muid: existing.muid, email: email, phone: phone);
+        updatedUser = User(
+          muid: existing.muid,
+          email: email,
+          phone: phone,
+          name: name,
+        );
       } else {
-        updatedUser = User(muid: _uuid.v4(), email: email, phone: phone);
+        updatedUser =
+            User(muid: _uuid.v4(), email: email, phone: phone, name: name);
       }
       await _storageService.setString(
         _userKey,

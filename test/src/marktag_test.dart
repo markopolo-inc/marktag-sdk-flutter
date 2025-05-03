@@ -6,7 +6,7 @@ import 'package:marktag/marktag.dart';
 void main() {
   group('Marktag', () {
     test('can be instantiated', () {
-      expect(Marktag(), isNotNull);
+      expect(Marktag.instance, isNotNull);
     });
   });
 }

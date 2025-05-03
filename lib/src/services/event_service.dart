@@ -45,7 +45,7 @@ class EventService {
       // Collect the response data
       final responseBody = await _readResponseAsString(response);
 
-      if (response.statusCode != 200) {
+      if (response.statusCode != 201) {
         logger.debugLog('Error sending event: $responseBody');
         throw HttpException(
           'Failed to send event. Status code: ${response.statusCode}',
