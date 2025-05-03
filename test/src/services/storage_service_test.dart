@@ -9,20 +9,20 @@ class MockSharedPreferences extends Mock implements SharedPreferences {}
 class MockLoggerService extends Mock implements LoggerService {}
 
 void main() {
-  late MockSharedPreferences mockPrefs;
-  late MockLoggerService mockLogger;
-  late StorageService storageService;
+  group('StorageService with mocks', () {
+    late MockSharedPreferences mockPrefs;
+    late MockLoggerService mockLogger;
+    late StorageService storageService;
 
-  setUp(() {
-    mockPrefs = MockSharedPreferences();
-    mockLogger = MockLoggerService();
-    storageService = StorageService(
-      sharedPreferences: mockPrefs,
-      logger: mockLogger,
-    );
-  });
+    setUp(() {
+      mockPrefs = MockSharedPreferences();
+      mockLogger = MockLoggerService();
+      storageService = StorageService(
+        sharedPreferences: mockPrefs,
+        logger: mockLogger,
+      );
+    });
 
-  group('StorageService', () {
     const testKey = 'testKey';
     const testValue = 'testValue';
 
@@ -61,6 +61,50 @@ void main() {
       expect(result, isTrue);
       verify(() => mockPrefs.clear()).called(1);
       verify(() => mockLogger.debugLog(any())).called(1);
+    });
+  });
+
+  group('StorageService with default constructor', () {
+    late StorageService storageService;
+
+    setUp(() {
+      SharedPreferences.setMockInitialValues({});
+    });
+
+    test('creates service with default logger when none provided', () {
+      // Just verifying that constructor doesn't throw an exception
+      expect(() => StorageService(sharedPreferences: MockSharedPreferences()),
+          returnsNormally);
+    });
+
+    test('uses SharedPreferences.getInstance() when no instance provided',
+        () async {
+      // Setup mock shared preferences
+      SharedPreferences.setMockInitialValues({'testKey': 'testValue'});
+
+      // Create service with default SharedPreferences
+      storageService = StorageService(logger: MockLoggerService());
+
+      // Test that the service can retrieve values, proving it's using SharedPreferences
+      final result = await storageService.getString('testKey');
+      expect(result, 'testValue');
+    });
+
+    test('full integration with default implementations', () async {
+      // Setup mock shared preferences
+      SharedPreferences.setMockInitialValues({});
+
+      // Create service with all defaults
+      storageService = StorageService();
+
+      // Test the full flow
+      await storageService.setString('testKey', 'testValue');
+      final result = await storageService.getString('testKey');
+      expect(result, 'testValue');
+
+      await storageService.remove('testKey');
+      final removedResult = await storageService.getString('testKey');
+      expect(removedResult, null);
     });
   });
 }
