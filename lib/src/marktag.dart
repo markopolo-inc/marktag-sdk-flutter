@@ -72,6 +72,48 @@ class Marktag {
     await _sendEvent(payload);
   }
 
+  /// Logs a search event.
+  Future<void> logSearch(String searchText) async {
+    final event = MarkTagEvent(
+      event: 'Search',
+      metadata: {
+        'search_term': searchText,
+      },
+    );
+    final payload = await _payloadService?.createPayload(event);
+    await _sendEvent(payload);
+  }
+
+  /// Logs a signup event.
+  /// Logs a signup event.
+  Future<void> logSignup({
+    String? email,
+    String? name,
+    String? phone,
+  }) async {
+    await _userService.setUser(email: email, name: name, phone: phone);
+    final event = MarkTagEvent(
+      event: 'Signup',
+      metadata: {
+        'email': email,
+        'name': name,
+        'phone': phone,
+      },
+    );
+    final payload = await _payloadService?.createPayload(event);
+    await _sendEvent(payload);
+  }
+
+  /// Logs a page view event.
+  Future<void> logPageView(String page) async {
+    final event = MarkTagEvent(
+      event: 'PageView',
+      pageUrl: page,
+    );
+    final payload = await _payloadService?.createPayload(event);
+    await _sendEvent(payload);
+  }
+
   /// Sends an event to the Marktag server.
   Future<void> _sendEvent(Map<String, dynamic>? payload) async {
     if (_tag == null) {

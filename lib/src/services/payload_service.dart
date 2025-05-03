@@ -29,6 +29,12 @@ class PayloadService {
   /// The payload includes user information, IP information, and event details.
   /// Returns a [Future] that completes with the payload as a [Map].
   Future<Map<String, dynamic>> createPayload(MarkTagEvent event) async {
+    if (event.email != null || event.phone != null) {
+      await userService.setUser(
+        email: event.email,
+        phone: event.phone,
+      );
+    }
     final user = await userService.getUser();
     final ipInfo = await ipService.getIpInfo();
     final payload = {
@@ -37,6 +43,7 @@ class PayloadService {
       'event_source': 'mobile',
       ...user.toJson(),
       'event': event.event,
+      'pageUrl': event.pageUrl,
       'products': event.items?.map((e) => e.toJson()).toList(),
       ...?event.metadata,
     };

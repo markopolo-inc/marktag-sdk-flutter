@@ -122,7 +122,7 @@ class MarkTagEvent {
     return MarkTagEvent(
       event: json['event'] as String,
       eventSource: json['event_source'] as String?,
-      pageUrl: json['pageUrl'] as String?,
+      pageUrl: json['page_url'] as String?,
       email: json['email'] as String?,
       phone: json['phone'] as String?,
       mtRefSrc: json['mt_ref_src'] as String?,
@@ -163,7 +163,7 @@ class MarkTagEvent {
   Map<String, dynamic> toJson() => {
         'event': event,
         if (eventSource != null) 'event_source': eventSource,
-        if (pageUrl != null) 'pageUrl': pageUrl,
+        if (pageUrl != null) 'page_url': pageUrl,
         if (email != null) 'email': email,
         if (phone != null) 'phone': phone,
         if (mtRefSrc != null) 'mt_ref_src': mtRefSrc,
