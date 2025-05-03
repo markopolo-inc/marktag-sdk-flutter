@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:marktag/src/models/marktag_event.dart';
 import 'package:marktag/src/services/ip_service.dart';
 import 'package:marktag/src/services/logger_service.dart';
@@ -37,6 +40,20 @@ class PayloadService {
     }
     final user = await userService.getUser();
     final ipInfo = await ipService.getIpInfo();
+    final deviceInfo = DeviceInfoPlugin();
+    String? deviceId;
+    if (Platform.isAndroid) {
+      final androidInfo = await deviceInfo.androidInfo;
+      final serial = androidInfo.serialNumber;
+      if (serial == 'unknown') {
+        deviceId = androidInfo.id;
+      } else {
+        deviceId = serial;
+      }
+    } else if (Platform.isIOS) {
+      final iosInfo = await deviceInfo.iosInfo;
+      deviceId = iosInfo.identifierForVendor;
+    }
     final payload = {
       'x-cf-ip': ipInfo.ip,
       'x-cf-loc': ipInfo.loc,
@@ -44,6 +61,7 @@ class PayloadService {
       ...user.toJson(),
       'event': event.event,
       'pageUrl': event.pageUrl,
+      'deviceId': deviceId,
       'products': event.items?.map((e) => e.toJson()).toList(),
       ...?event.metadata,
     };
