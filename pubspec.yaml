@@ -2,10 +2,11 @@ name: marktag
 description: Flutter SDK for Marktag
 version: 0.1.0+1
 publish_to: none
+homepage: https://markopolo-inc.github.io/marktag-docs/
 
 environment:
   sdk: ^3.5.0
-  flutter: ^3.24.0
+  flutter: ">=3.24.0"
 
 dependencies:
   flutter:
