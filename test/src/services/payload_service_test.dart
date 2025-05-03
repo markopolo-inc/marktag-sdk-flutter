@@ -52,6 +52,7 @@ void main() {
         );
         const testEvent = MarkTagEvent(
           event: 'test_event',
+          pageUrl: 'https://test.com/page',
           items: [
             MarkTagEventItem(
               id: 'test-id',
@@ -85,6 +86,7 @@ void main() {
           'muid': 'test-muid',
           'email': 'test@example.com',
           'phone': '1234567890',
+          'pageUrl': 'https://test.com/page',
           'event': 'test_event',
           'products': [
             {
@@ -131,6 +133,7 @@ void main() {
           'x-cf-loc': 'US',
           'event_source': 'mobile',
           'muid': 'test-muid',
+          'pageUrl': null,
           'event': 'test_event',
           'products': null,
         });
@@ -173,6 +176,7 @@ void main() {
           'x-cf-loc': 'US',
           'event_source': 'mobile',
           'muid': 'test-muid',
+          'pageUrl': null,
           'event': 'test_event',
           'products': [
             {
@@ -215,6 +219,7 @@ void main() {
           'x-cf-loc': 'US',
           'event_source': 'mobile',
           'muid': 'test-muid',
+          'pageUrl': null,
           'event': 'test_event',
           'products': null,
           'key1': 'value1',
