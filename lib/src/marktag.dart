@@ -13,9 +13,16 @@ class Marktag {
   /// The singleton instance of the [Marktag] class.
   static final Marktag instance = Marktag._();
 
-  /// Initializes the [Marktag] instance with the given [tag].
+  /// Initializes the [Marktag] instance with the given [tag] and optional
+  /// [tagId].
+  ///
+  /// [tag] is the Marktag host. For server-side / mobile, the host itself
+  /// identifies the tenant (e.g. `mtag.imti.tech`). For client-side (web),
+  /// a shared host is used and [tagId] identifies the tenant
+  /// (e.g. `tag: 'mtag.markopolo.ai', tagId: 'y5mpbm'`).
   void init({
     required String tag,
+    String? tagId,
     bool? enableLogging,
   }) {
     loggerService =
@@ -33,9 +40,11 @@ class Marktag {
       storageService: storageService,
       logger: loggerService,
     );
-    _eventService = EventService(tag: tag, logger: loggerService);
+    _eventService =
+        EventService(tag: tag, tagId: tagId, logger: loggerService);
     _payloadService = PayloadService(
       userService: _userService,
+      tagId: tagId,
       ipService: IPService(logger: loggerService),
       logger: loggerService,
     );
@@ -102,7 +111,6 @@ class Marktag {
   }
 
   /// Logs a signup event.
-  /// Logs a signup event.
   Future<void> logSignup({
     String? email,
     String? name,
@@ -136,13 +144,13 @@ class Marktag {
     try {
       if (_tag == null) {
         loggerService?.debugLog(
-        'Marktag must be initialized with init() before calling any methods',
-      );
-      return;
-    }
+          'Marktag must be initialized with init() before calling any methods',
+        );
+        return;
+      }
 
-    if (payload == null) {
-      return;
+      if (payload == null) {
+        return;
       }
       await _eventService?.markEvent(payload);
     } catch (e) {

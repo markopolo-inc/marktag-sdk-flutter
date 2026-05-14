@@ -4,7 +4,12 @@ import 'package:marktag/marktag.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  Marktag.instance.init(tag: 'test-tag.website.com', enableLogging: true);
+  // Client-side mode: shared host + tagId identifies the tenant.
+  Marktag.instance.init(
+    tag: 'mtag.markopolo.ai',
+    tagId: 'y5mpbm',
+    enableLogging: true,
+  );
   runApp(const MyApp());
 }
 

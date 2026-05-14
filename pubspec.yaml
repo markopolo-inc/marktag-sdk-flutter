@@ -1,6 +1,6 @@
 name: marktag
 description: Flutter SDK for Marktag
-version: 0.1.2+3
+version: 0.2.0
 homepage: https://markopolo-inc.github.io/marktag-docs/
 repository: https://github.com/markopolo-inc/marktag-sdk-flutter
 issue_tracker: https://github.com/markopolo-inc/marktag-sdk-flutter/issues
@@ -11,13 +11,14 @@ topics:
   - dart
 
 environment:
-  sdk: ^3.5.0
-  flutter: ">=3.24.0"
+  sdk: ^3.10.0
+  flutter: ">=3.38.0"
 
 dependencies:
-  device_info_plus: ^11.3.0
+  device_info_plus: ^13.1.0
   flutter:
     sdk: flutter
+  http: ^1.4.0
   meta: ^1.15.0
   shared_preferences: ^2.5.3
   uuid: ^4.5.1

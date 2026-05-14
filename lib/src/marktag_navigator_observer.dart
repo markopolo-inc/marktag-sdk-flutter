@@ -39,11 +39,11 @@ bool defaultRouteFilter(Route<dynamic>? route) => route is PageRoute;
 /// - Replace: When a route is replaced with another route
 /// - Pop: When returning to a previous route
 ///
-/// This observer can also be used with [RouteAware] for more granular tracking.
+  /// This observer can also be used with RouteAware for more granular tracking.
 class MarktagNavigatorObserver extends RouteObserver<ModalRoute<dynamic>> {
   /// Creates a [MarktagNavigatorObserver] instance.
   ///
-  /// - [logger]: Optional custom logger,
+  /// - logger: Optional custom logger,
   /// defaults to LoggerService with name 'MarktagNavigatorObserver'
   /// - [nameExtractor]: Function to extract screen names from routes,
   /// defaults to using route.settings.name

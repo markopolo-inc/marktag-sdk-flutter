@@ -86,7 +86,7 @@ void main() {
       // Create service with default SharedPreferences
       storageService = StorageService(logger: MockLoggerService());
 
-      // Test that the service can retrieve values, proving it's using SharedPreferences
+      // Proves default path uses SharedPreferences.
       final result = await storageService.getString('testKey');
       expect(result, 'testValue');
     });

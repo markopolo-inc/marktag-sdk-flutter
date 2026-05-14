@@ -27,6 +27,7 @@ void main() {
       userService: mockUserService,
       ipService: mockIPService,
       logger: mockLogger,
+      resolveDeviceId: () async => null,
     );
   });
 
@@ -290,8 +291,8 @@ void main() {
       });
 
       test(
-          'does not call setUser when email and phone are not provided in the event',
-          () async {
+        'does not call setUser when event has no email or phone',
+        () async {
         // Arrange
         const testUser = User(
           muid: 'test-muid',

@@ -1,6 +1,5 @@
-import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:http/http.dart' as http;
 import 'package:marktag/src/services/logger_service.dart';
 import 'package:meta/meta.dart';
 
@@ -39,14 +38,14 @@ Map<String, String> parseResponse(String response) {
 
 /// Service for fetching and caching IP information from Cloudflare.
 class IPService {
-  /// Creates an [IPService] with an optional [HttpClient] for testability.
+  /// Creates an [IPService] with an optional [http.Client] for testability.
   IPService({
-    HttpClient? httpClient,
+    http.Client? httpClient,
     LoggerService? logger,
-  })  : _httpClient = httpClient ?? HttpClient(),
+  })  : _httpClient = httpClient ?? http.Client(),
         _logger = logger ?? LoggerService(name: 'IPService');
   static IPInfo? _ipInfo;
-  final HttpClient _httpClient;
+  final http.Client _httpClient;
   final LoggerService _logger;
 
   /// Gets the IP information, fetching from the network if not cached.
@@ -60,17 +59,26 @@ class IPService {
       );
       return _ipInfo!;
     }
+    if (kIsWeb) {
+      // Browsers block this GET to cloudflare.com from another origin (CORS).
+      // The MarkTag ingest endpoint can still resolve geo from the request.
+      _logger.debugLog(
+        'Web client: skipping Cloudflare trace; using placeholder IP fields.',
+      );
+      _ipInfo = IPInfo(ip: '', loc: '', uag: '');
+      return _ipInfo!;
+    }
+
     _logger.debugLog('Fetching IP info from network.');
     final uri = Uri.parse('https://www.cloudflare.com/cdn-cgi/trace');
-    final request = await _httpClient.getUrl(uri);
-    final response = await request.close();
+    final response = await _httpClient.get(uri);
     if (response.statusCode != 200) {
       _logger.debugLog(
         'Could not get IP info: HTTP ${response.statusCode}',
       );
       throw StateError('Could not get IP info: HTTP ${response.statusCode}');
     }
-    final data = await response.transform(utf8.decoder).join();
+    final data = response.body;
     if (data.isEmpty) {
       _logger.debugLog('Could not get IP info: Empty response.');
       throw StateError('Could not get IP info: Empty response.');

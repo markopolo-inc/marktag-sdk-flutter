@@ -1,22 +1,13 @@
-import 'dart:convert';
-import 'dart:io';
-import 'dart:async';
-
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
 import 'package:marktag/src/services/ip_service.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockHttpClient extends Mock implements HttpClient {}
-
-class MockHttpClientRequest extends Mock implements HttpClientRequest {}
-
-class MockHttpClientResponse extends Mock implements HttpClientResponse {}
-
-class FakeUri extends Fake implements Uri {}
+class MockHttpClient extends Mock implements http.Client {}
 
 void main() {
   setUpAll(() {
-    registerFallbackValue(FakeUri());
+    registerFallbackValue(Uri.parse('https://example.com'));
   });
 
   group('parseResponse', () {
@@ -40,60 +31,40 @@ void main() {
 
   group('IPService', () {
     late MockHttpClient mockHttpClient;
-    late MockHttpClientRequest mockRequest;
-    late MockHttpClientResponse mockResponse;
     late IPService service;
 
     setUp(() {
       mockHttpClient = MockHttpClient();
-      mockRequest = MockHttpClientRequest();
-      mockResponse = MockHttpClientResponse();
       service = IPService(httpClient: mockHttpClient);
-      // Reset static cache before each test
       IPService.resetCache();
     });
 
     group('constructor', () {
-      test('uses provided HttpClient when specified', () {
+      test('uses provided http.Client when specified', () async {
         final customClient = MockHttpClient();
-        final service = IPService(httpClient: customClient);
-
-        // Set up the mock to verify it's used
-        when(() => customClient.getUrl(any()))
-            .thenAnswer((_) async => mockRequest);
-        when(() => mockRequest.close()).thenAnswer((_) async => mockResponse);
-        when(() => mockResponse.statusCode).thenReturn(200);
-        when(() => mockResponse.transform(utf8.decoder)).thenAnswer(
-          (_) => Stream<List<int>>.fromIterable([
-            utf8.encode('ip=1.1.1.1\nloc=US\nuag=test\n'),
-          ]).transform(utf8.decoder),
+        final customService = IPService(httpClient: customClient);
+        when(() => customClient.get(any())).thenAnswer(
+          (_) async => http.Response(
+            'ip=1.1.1.1\nloc=US\nuag=test\n',
+            200,
+          ),
         );
 
-        // Call a method that uses the HttpClient
-        service.getIpInfo();
+        await customService.getIpInfo();
 
-        // Verify the provided client was used
-        verify(() => customClient.getUrl(any())).called(1);
+        verify(() => customClient.get(any())).called(1);
       });
 
-      test('creates new HttpClient when not specified', () {
-        // This test is more challenging as we can't mock the default HttpClient
-        // But we can at least verify the constructor doesn't throw
+      test('creates new http.Client when not specified', () {
         expect(IPService.new, returnsNormally);
       });
     });
 
     test('returns IPInfo on valid response', () async {
       const responseString = 'ip=1.2.3.4\nloc=US\nuag=agent\n';
-      final responseStream = Stream<List<int>>.fromIterable([
-        utf8.encode(responseString),
-      ]);
-      when(() => mockHttpClient.getUrl(any()))
-          .thenAnswer((_) async => mockRequest);
-      when(() => mockRequest.close()).thenAnswer((_) async => mockResponse);
-      when(() => mockResponse.statusCode).thenReturn(200);
-      when(() => mockResponse.transform(utf8.decoder))
-          .thenAnswer((_) => responseStream.transform(utf8.decoder));
+      when(() => mockHttpClient.get(any())).thenAnswer(
+        (_) async => http.Response(responseString, 200),
+      );
 
       final info = await service.getIpInfo();
       expect(info.ip, '1.2.3.4');
@@ -102,61 +73,40 @@ void main() {
     });
 
     test('throws StateError on non-200 response', () async {
-      when(() => mockHttpClient.getUrl(any()))
-          .thenAnswer((_) async => mockRequest);
-      when(() => mockRequest.close()).thenAnswer((_) async => mockResponse);
-      when(() => mockResponse.statusCode).thenReturn(404);
-      when(() => mockResponse.transform(utf8.decoder)).thenAnswer(
-        (_) => const Stream<List<int>>.empty().transform(utf8.decoder),
+      when(() => mockHttpClient.get(any())).thenAnswer(
+        (_) async => http.Response('', 404),
       );
 
       expect(() => service.getIpInfo(), throwsA(isA<StateError>()));
     });
 
     test('throws StateError on empty response', () async {
-      when(() => mockHttpClient.getUrl(any()))
-          .thenAnswer((_) async => mockRequest);
-      when(() => mockRequest.close()).thenAnswer((_) async => mockResponse);
-      when(() => mockResponse.statusCode).thenReturn(200);
-      when(() => mockResponse.transform(utf8.decoder)).thenAnswer(
-        (_) => Stream<List<int>>.fromIterable([utf8.encode('')])
-            .transform(utf8.decoder),
+      when(() => mockHttpClient.get(any())).thenAnswer(
+        (_) async => http.Response('', 200),
       );
 
       expect(() => service.getIpInfo(), throwsA(isA<StateError>()));
     });
 
     test('throws StateError on missing fields', () async {
-      const responseString = 'ip=1.2.3.4\nloc=US\n'; // missing uag
-      final responseStream = Stream<List<int>>.fromIterable([
-        utf8.encode(responseString),
-      ]);
-      when(() => mockHttpClient.getUrl(any()))
-          .thenAnswer((_) async => mockRequest);
-      when(() => mockRequest.close()).thenAnswer((_) async => mockResponse);
-      when(() => mockResponse.statusCode).thenReturn(200);
-      when(() => mockResponse.transform(utf8.decoder))
-          .thenAnswer((_) => responseStream.transform(utf8.decoder));
+      const responseString = 'ip=1.2.3.4\nloc=US\n';
+      when(() => mockHttpClient.get(any())).thenAnswer(
+        (_) async => http.Response(responseString, 200),
+      );
 
       expect(() => service.getIpInfo(), throwsA(isA<StateError>()));
     });
 
     test('returns cached IPInfo on subsequent calls', () async {
       const responseString = 'ip=1.2.3.4\nloc=US\nuag=agent\n';
-      final responseStream = Stream<List<int>>.fromIterable([
-        utf8.encode(responseString),
-      ]);
-      when(() => mockHttpClient.getUrl(any()))
-          .thenAnswer((_) async => mockRequest);
-      when(() => mockRequest.close()).thenAnswer((_) async => mockResponse);
-      when(() => mockResponse.statusCode).thenReturn(200);
-      when(() => mockResponse.transform(utf8.decoder))
-          .thenAnswer((_) => responseStream.transform(utf8.decoder));
+      when(() => mockHttpClient.get(any())).thenAnswer(
+        (_) async => http.Response(responseString, 200),
+      );
 
       final info1 = await service.getIpInfo();
       final info2 = await service.getIpInfo();
       expect(identical(info1, info2), isTrue);
-      verify(() => mockHttpClient.getUrl(any())).called(1);
+      verify(() => mockHttpClient.get(any())).called(1);
     });
   });
 }
