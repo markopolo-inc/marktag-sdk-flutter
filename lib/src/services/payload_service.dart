@@ -62,9 +62,10 @@ class PayloadService {
     // the event still goes through.
     var cfIp = '';
     var cfLoc = '';
-    if (!isClientMode && _ipService != null) {
+    final ipService = _ipService;
+    if (!isClientMode && ipService != null) {
       try {
-        final ipInfo = await _ipService!.getIpInfo();
+        final ipInfo = await ipService.getIpInfo();
         cfIp = ipInfo.ip;
         cfLoc = ipInfo.loc;
       } catch (e) {

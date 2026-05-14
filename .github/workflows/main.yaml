@@ -1,4 +1,4 @@
-name: ci
+name: Publish flutter package to pub.dev
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
