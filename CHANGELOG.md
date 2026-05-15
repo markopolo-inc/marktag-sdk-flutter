@@ -1,3 +1,8 @@
+## 1.0.1
+
+- `Marktag.init` now accepts an optional `serverId` for server-side (mobile) mode. When provided, the SDK sends `isServer: true` and `serverId` in the payload so the server can resolve the tenant by `serverSide.serverId` instead of relying on host-only routing.
+- Server-side payloads no longer send `isClient: false` / `isServer: true` when no `serverId` is set; the keys are omitted entirely, letting the server fall through to its hostname lookup.
+
 ## 1.0.0
 
 - Add Flutter web (client-side) support: SDK runs in browsers via `package:http` instead of `dart:io`.
