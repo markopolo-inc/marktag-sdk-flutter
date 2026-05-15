@@ -2,14 +2,26 @@ import 'package:example/demo_page.dart';
 import 'package:flutter/material.dart';
 import 'package:marktag/marktag.dart';
 
+// Test toggle.
+//   true  → init with `tag + tagId` (client-side mode).
+//   false → init with `tag + serverId` (server-side mode).
+const _useClientSide = false;
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  // Client-side mode: shared host + tagId identifies the tenant.
-  Marktag.instance.init(
-    tag: 'mtag.markopolo.ai',
-    tagId: 'y5mpbm',
-    enableLogging: true,
-  );
+  if (_useClientSide) {
+    Marktag.instance.init(
+      tag: 'mtag.markopolo.ai',
+      tagId: '3efNXB',
+      enableLogging: true,
+    );
+  } else {
+    Marktag.instance.init(
+      tag: 'mtag.imti.tech',
+      serverId: '21j3eM',
+      enableLogging: true,
+    );
+  }
   runApp(const MyApp());
 }
 

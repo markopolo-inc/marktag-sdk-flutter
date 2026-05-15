@@ -13,16 +13,21 @@ class Marktag {
   /// The singleton instance of the [Marktag] class.
   static final Marktag instance = Marktag._();
 
-  /// Initializes the [Marktag] instance with the given [tag] and optional
-  /// [tagId].
+  /// Initializes the [Marktag] instance.
   ///
-  /// [tag] is the Marktag host. For server-side / mobile, the host itself
-  /// identifies the tenant (e.g. `mtag.imti.tech`). For client-side (web),
-  /// a shared host is used and [tagId] identifies the tenant
+  /// [tag] is the Marktag host (e.g. `mtag.imti.tech` or `mtag.markopolo.ai`).
+  ///
+  /// Pass [tagId] for client-side (web) mode where a shared host is used and
+  /// the tag id identifies the tenant
   /// (e.g. `tag: 'mtag.markopolo.ai', tagId: 'y5mpbm'`).
+  ///
+  /// Pass [serverId] for server-side (mobile) mode where the tenant is
+  /// identified by an explicit server id
+  /// (e.g. `tag: 'mtag.imti.tech', serverId: '21j3eM'`).
   void init({
     required String tag,
     String? tagId,
+    String? serverId,
     bool? enableLogging,
   }) {
     loggerService =
@@ -45,6 +50,7 @@ class Marktag {
     _payloadService = PayloadService(
       userService: _userService,
       tagId: tagId,
+      serverId: serverId,
       ipService: IPService(logger: loggerService),
       logger: loggerService,
     );

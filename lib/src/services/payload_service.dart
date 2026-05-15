@@ -17,6 +17,7 @@ class PayloadService {
   PayloadService({
     required this.userService,
     this.tagId,
+    this.serverId,
     IPService? ipService,
     LoggerService? logger,
     @visibleForTesting Future<String?> Function()? resolveDeviceId,
@@ -28,9 +29,13 @@ class PayloadService {
   /// The service used to fetch user information.
   final UserService userService;
 
-  /// The tenant identifier (sent as `clientId` in the payload). Optional —
-  /// omitted on server-side (mobile) where the host identifies the tenant.
+  /// The tenant identifier for client-side mode (sent as `clientId` in the
+  /// payload). Mutually exclusive with [serverId].
   final String? tagId;
+
+  /// The tenant identifier for server-side mode (sent as `serverId` in the
+  /// payload). Mutually exclusive with [tagId].
+  final String? serverId;
 
   /// The logger used for logging messages.
   final LoggerService logger;
@@ -72,11 +77,13 @@ class PayloadService {
         logger.debugLog('Could not fetch IP info, sending empty values: $e');
       }
     }
+    final hasServerId = serverId != null && serverId!.isNotEmpty;
     final payload = <String, dynamic>{
       'event_source': kIsWeb ? 'web' : 'mobile',
       if (isClientMode) 'clientId': tagId,
-      'isClient': isClientMode,
-      'isServer': !isClientMode,
+      if (isClientMode) 'isClient': true,
+      if (!isClientMode && hasServerId) 'serverId': serverId,
+      if (!isClientMode && hasServerId) 'isServer': true,
       if (!isClientMode) 'x-cf-ip': cfIp,
       if (!isClientMode) 'x-cf-loc': cfLoc,
       'muid': deviceId,

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 import 'package:marktag/src/services/logger_service.dart';
@@ -60,13 +62,9 @@ class IPService {
       return _ipInfo!;
     }
     if (kIsWeb) {
-      // Browsers block this GET to cloudflare.com from another origin (CORS).
-      // The MarkTag ingest endpoint can still resolve geo from the request.
-      _logger.debugLog(
-        'Web client: skipping Cloudflare trace; using placeholder IP fields.',
-      );
-      _ipInfo = IPInfo(ip: '', loc: '', uag: '');
-      return _ipInfo!;
+      // Cloudflare's trace endpoint has no CORS headers, so use a
+      // CORS-friendly equivalent in the browser.
+      return _fetchFromIpapi();
     }
 
     _logger.debugLog('Fetching IP info from network.');
@@ -97,6 +95,28 @@ class IPService {
       ' LOC: ${_ipInfo!.loc}, UAG: ${_ipInfo!.uag}',
     );
     return _ipInfo!;
+  }
+
+  /// CORS-friendly IP/geo lookup for web. Returns empty strings on failure
+  /// rather than throwing so server-side events can still go through.
+  Future<IPInfo> _fetchFromIpapi() async {
+    try {
+      final uri = Uri.parse('https://ipapi.co/json/');
+      final response = await _httpClient.get(uri);
+      if (response.statusCode != 200) {
+        _logger.debugLog('ipapi.co returned HTTP ${response.statusCode}');
+        return IPInfo(ip: '', loc: '', uag: '');
+      }
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      final ip = (data['ip'] as String?) ?? '';
+      final loc = (data['country_code'] as String?) ?? '';
+      _ipInfo = IPInfo(ip: ip, loc: loc, uag: '');
+      _logger.debugLog('IP info via ipapi.co. IP: $ip, LOC: $loc');
+      return _ipInfo!;
+    } catch (e) {
+      _logger.debugLog('ipapi.co fetch failed: $e');
+      return IPInfo(ip: '', loc: '', uag: '');
+    }
   }
 
   /// Resets the cached IP info. Only for testing purposes.
