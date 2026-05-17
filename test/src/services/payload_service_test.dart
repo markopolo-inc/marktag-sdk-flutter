@@ -51,8 +51,8 @@ void main() {
           loc: 'US',
           uag: 'test-agent',
         );
-        const testEvent = MarktagEvent(
-          event: 'test_event',
+        final testEvent = MarktagEvent(
+          event: 'TestEvent',
           pageUrl: 'https://test.com/page',
           items: [
             MarktagEventItem(
@@ -88,7 +88,7 @@ void main() {
           'email': 'test@example.com',
           'phone': '1234567890',
           'pageUrl': 'https://test.com/page',
-          'event': 'test_event',
+          'event': 'TestEvent',
           'deviceId': null,
           'products': [
             {
@@ -113,8 +113,8 @@ void main() {
           loc: 'US',
           uag: 'test-agent',
         );
-        const testEvent = MarktagEvent(
-          event: 'test_event',
+        final testEvent = MarktagEvent(
+          event: 'TestEvent',
         );
 
         when(() => mockUserService.getUser()).thenAnswer((_) async => testUser);
@@ -136,7 +136,7 @@ void main() {
           'event_source': 'mobile',
           'muid': 'test-muid',
           'pageUrl': null,
-          'event': 'test_event',
+          'event': 'TestEvent',
           'products': null,
           'deviceId': null,
         });
@@ -152,8 +152,8 @@ void main() {
           loc: 'US',
           uag: 'test-agent',
         );
-        const testEvent = MarktagEvent(
-          event: 'test_event',
+        final testEvent = MarktagEvent(
+          event: 'TestEvent',
           items: [
             MarktagEventItem(
               id: 'item-1',
@@ -180,7 +180,7 @@ void main() {
           'event_source': 'mobile',
           'muid': 'test-muid',
           'pageUrl': null,
-          'event': 'test_event',
+          'event': 'TestEvent',
           'products': [
             {
               'id': 'item-1',
@@ -200,8 +200,8 @@ void main() {
           loc: 'US',
           uag: 'test-agent',
         );
-        const testEvent = MarktagEvent(
-          event: 'test_event',
+        final testEvent = MarktagEvent(
+          event: 'TestEvent',
           metadata: {'key1': 'value1', 'key2': 42},
         );
 
@@ -224,7 +224,7 @@ void main() {
           'event_source': 'mobile',
           'muid': 'test-muid',
           'pageUrl': null,
-          'event': 'test_event',
+          'event': 'TestEvent',
           'products': null,
           'key1': 'value1',
           'key2': 42,
@@ -245,8 +245,8 @@ void main() {
           loc: 'US',
           uag: 'test-agent',
         );
-        const testEvent = MarktagEvent(
-          event: 'test_event',
+        final testEvent = MarktagEvent(
+          event: 'TestEvent',
           email: 'updated@example.com',
           phone: '9876543210',
         );
@@ -284,7 +284,7 @@ void main() {
           'email': 'updated@example.com',
           'phone': '9876543210',
           'pageUrl': null,
-          'event': 'test_event',
+          'event': 'TestEvent',
           'products': null,
           'deviceId': null,
         });
@@ -302,8 +302,8 @@ void main() {
           loc: 'US',
           uag: 'test-agent',
         );
-        const testEvent = MarktagEvent(
-          event: 'test_event',
+        final testEvent = MarktagEvent(
+          event: 'TestEvent',
           // No email or phone provided
         );
 
@@ -332,7 +332,7 @@ void main() {
           'event_source': 'mobile',
           'muid': 'test-muid',
           'pageUrl': null,
-          'event': 'test_event',
+          'event': 'TestEvent',
           'products': null,
           'deviceId': null,
         });
@@ -340,8 +340,8 @@ void main() {
 
       test('propagates exceptions from userService', () async {
         // Arrange
-        const testEvent = MarktagEvent(
-          event: 'test_event',
+        final testEvent = MarktagEvent(
+          event: 'TestEvent',
         );
         final testException = Exception('User service error');
 

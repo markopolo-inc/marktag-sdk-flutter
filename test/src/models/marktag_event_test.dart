@@ -71,7 +71,7 @@ void main() {
   group('MarktagEvent', () {
     test('fromJson and toJson work correctly', () {
       final json = {
-        'event': 'purchase',
+        'event': 'Purchase',
         'event_source': 'web',
         'pageUrl': 'https://example.com',
         'email': 'test@example.com',
@@ -93,7 +93,7 @@ void main() {
         'metadata': {'foo': 'bar', 'baz': 1},
       };
       final event = MarktagEvent.fromJson(json);
-      expect(event.event, 'purchase');
+      expect(event.event, 'Purchase');
       expect(event.eventSource, 'web');
       expect(event.pageUrl, 'https://example.com');
       expect(event.email, 'test@example.com');
@@ -106,37 +106,51 @@ void main() {
     });
 
     test('copyWith returns a new instance with updated values', () {
-      const event = MarktagEvent(
-        event: 'add_to_cart',
+      final event = MarktagEvent(
+        event: 'AddToCart',
       );
       final updated =
-          event.copyWith(event: 'purchase', email: 'test@example.com');
-      expect(updated.event, 'purchase');
+          event.copyWith(event: 'Purchase', email: 'test@example.com');
+      expect(updated.event, 'Purchase');
       expect(updated.pageUrl, isNull);
       expect(updated.email, 'test@example.com');
       expect(updated, isNot(same(event)));
     });
 
     test('copyWith preserves original values when null is passed', () {
-      const event = MarktagEvent(
-        event: 'add_to_cart',
+      final event = MarktagEvent(
+        event: 'AddToCart',
         email: 'original@example.com',
       );
       final updated = event.copyWith();
-      expect(updated.event, 'add_to_cart');
+      expect(updated.event, 'AddToCart');
       expect(updated.email, 'original@example.com');
       expect(updated, isNot(same(event)));
     });
 
+    test('rejects snake_case event names', () {
+      expect(
+        () => MarktagEvent(event: 'add_to_cart'),
+        throwsArgumentError,
+      );
+    });
+
+    test('rejects camelCase event names', () {
+      expect(
+        () => MarktagEvent(event: 'addToCart'),
+        throwsArgumentError,
+      );
+    });
+
     test('handles null pageUrl in JSON', () {
       final json = {
-        'event': 'view',
+        'event': 'ViewContent',
         // pageUrl is omitted
       };
       final event = MarktagEvent.fromJson(json);
       expect(event.pageUrl, isNull);
-      expect(event.event, 'view');
-      expect(event.toJson(), {'event': 'view'});
+      expect(event.event, 'ViewContent');
+      expect(event.toJson(), {'event': 'ViewContent'});
     });
   });
 }

@@ -1,4 +1,5 @@
 import 'package:marktag/src/models/marktag_event.dart';
+import 'package:marktag/src/models/marktag_events.dart';
 import 'package:marktag/src/services/event_service.dart';
 import 'package:marktag/src/services/ip_service.dart';
 import 'package:marktag/src/services/logger_service.dart';
@@ -93,7 +94,7 @@ class Marktag {
   }) async {
     await _userService.setUser(email: email, name: name, phone: phone);
     final event = MarktagEvent(
-      event: 'Login',
+      event: MarktagEvents.login,
       metadata: {
         'email': email,
         'name': name,
@@ -107,7 +108,7 @@ class Marktag {
   /// Logs a search event.
   Future<void> logSearch(String searchText) async {
     final event = MarktagEvent(
-      event: 'Search',
+      event: MarktagEvents.search,
       metadata: {
         'search_term': searchText,
       },
@@ -124,7 +125,7 @@ class Marktag {
   }) async {
     await _userService.setUser(email: email, name: name, phone: phone);
     final event = MarktagEvent(
-      event: 'Signup',
+      event: MarktagEvents.signup,
       metadata: {
         'email': email,
         'name': name,
@@ -138,7 +139,7 @@ class Marktag {
   /// Logs a page view event.
   Future<void> logPageView(String page) async {
     final event = MarktagEvent(
-      event: 'PageView',
+      event: MarktagEvents.pageView,
       pageUrl: page,
     );
     final payload = await _payloadService?.createPayload(event);

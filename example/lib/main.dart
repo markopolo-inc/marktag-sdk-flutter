@@ -12,7 +12,7 @@ void main() {
   if (_useClientSide) {
     Marktag.instance.init(
       tag: 'mtag.markopolo.ai',
-      tagId: '3efNXB',
+      tagId: 'y5mpbm',
       enableLogging: true,
     );
   } else {
@@ -89,7 +89,7 @@ class HomePage extends StatelessWidget {
               onPressed: () {
                 Marktag.instance.logEvent(
                   MarktagEvent(
-                    event: 'ViewItem',
+                    event: MarktagEvents.viewItem,
                     pageUrl: '/',
                     items: [
                       MarktagEventItem(

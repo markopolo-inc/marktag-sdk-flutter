@@ -105,8 +105,45 @@ class MarktagEventItem {
 
 /// Represents a Marktag event, such as a page view, add to cart, or purchase.
 class MarktagEvent {
+  static final RegExp _pascalCaseEventName = RegExp(r'^[A-Z][a-zA-Z0-9]*$');
+
+  /// Throws [ArgumentError] if [name] is not PascalCase (e.g. `AddToCart`).
+  static void assertPascalCaseEventName(String name) {
+    if (!_pascalCaseEventName.hasMatch(name)) {
+      throw ArgumentError.value(
+        name,
+        'event',
+        'Event name must be PascalCase (e.g. AddToCart). '
+        'Use MarktagEvents constants instead of snake_case or camelCase.',
+      );
+    }
+  }
+
   /// Creates a [MarktagEvent].
-  const MarktagEvent({
+  factory MarktagEvent({
+    required String event,
+    String? pageUrl,
+    String? eventSource,
+    String? email,
+    String? phone,
+    String? mtRefSrc,
+    List<MarktagEventItem>? items,
+    Map<String, dynamic>? metadata,
+  }) {
+    assertPascalCaseEventName(event);
+    return MarktagEvent._(
+      event: event,
+      pageUrl: pageUrl,
+      eventSource: eventSource,
+      email: email,
+      phone: phone,
+      mtRefSrc: mtRefSrc,
+      items: items,
+      metadata: metadata,
+    );
+  }
+
+  const MarktagEvent._({
     required this.event,
     this.pageUrl,
     this.eventSource,
@@ -119,8 +156,10 @@ class MarktagEvent {
 
   /// Creates a [MarktagEvent] from a JSON map.
   factory MarktagEvent.fromJson(Map<String, dynamic> json) {
-    return MarktagEvent(
-      event: json['event'] as String,
+    final event = json['event'] as String;
+    assertPascalCaseEventName(event);
+    return MarktagEvent._(
+      event: event,
       eventSource: json['event_source'] as String?,
       pageUrl: json['pageUrl'] as String?,
       email: json['email'] as String?,
@@ -183,8 +222,12 @@ class MarktagEvent {
     List<MarktagEventItem>? items,
     Map<String, dynamic>? metadata,
   }) {
-    return MarktagEvent(
-      event: event ?? this.event,
+    final nextEvent = event ?? this.event;
+    if (event != null) {
+      assertPascalCaseEventName(nextEvent);
+    }
+    return MarktagEvent._(
+      event: nextEvent,
       eventSource: eventSource ?? this.eventSource,
       pageUrl: pageUrl ?? this.pageUrl,
       email: email ?? this.email,
