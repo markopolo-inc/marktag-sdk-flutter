@@ -21,12 +21,5 @@ dev_dependencies:
 
   flutter_lints: ^6.0.0
 
-dependency_overrides:
-  meta: ^1.18.2
-  matcher: ^0.12.20
-  native_toolchain_c: ^0.18.0
-  test_api: ^0.7.12
-  vector_math: ^2.3.0
-
 flutter:
   uses-material-design: true

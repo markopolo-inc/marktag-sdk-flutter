@@ -1,3 +1,10 @@
+## 2.0.1
+
+- Document `MarktagEvents` constants.
+- Upgrade `very_good_analysis` to ^10.2.0 and apply related lint fixes.
+- Add `@visibleForTesting` `ipService` getter on `PayloadService` for tests.
+- Example app: use path dependency for local `marktag`, upgrade `flutter_lints` to ^6.0.0.
+
 ## 2.0.0
 
 - Event names must be PascalCase (for example `AddToCart`, `PageView`). Snake_case and camelCase names throw `ArgumentError`.
