@@ -1,3 +1,8 @@
+## 2.0.2
+
+- Remove `dependency_overrides` so pub publish validation passes.
+- Align release metadata for pub.dev (CHANGELOG, version).
+
 ## 2.0.1
 
 - Document `MarktagEvents` constants.
