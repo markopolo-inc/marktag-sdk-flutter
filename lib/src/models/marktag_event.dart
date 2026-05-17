@@ -105,20 +105,6 @@ class MarktagEventItem {
 
 /// Represents a Marktag event, such as a page view, add to cart, or purchase.
 class MarktagEvent {
-  static final RegExp _pascalCaseEventName = RegExp(r'^[A-Z][a-zA-Z0-9]*$');
-
-  /// Throws [ArgumentError] if [name] is not PascalCase (e.g. `AddToCart`).
-  static void assertPascalCaseEventName(String name) {
-    if (!_pascalCaseEventName.hasMatch(name)) {
-      throw ArgumentError.value(
-        name,
-        'event',
-        'Event name must be PascalCase (e.g. AddToCart). '
-        'Use MarktagEvents constants instead of snake_case or camelCase.',
-      );
-    }
-  }
-
   /// Creates a [MarktagEvent].
   factory MarktagEvent({
     required String event,
@@ -172,6 +158,20 @@ class MarktagEvent {
           ? Map<String, dynamic>.from(json['metadata'] as Map)
           : null,
     );
+  }
+
+  static final RegExp _pascalCaseEventName = RegExp(r'^[A-Z][a-zA-Z0-9]*$');
+
+  /// Throws [ArgumentError] if [name] is not PascalCase (e.g. `AddToCart`).
+  static void assertPascalCaseEventName(String name) {
+    if (!_pascalCaseEventName.hasMatch(name)) {
+      throw ArgumentError.value(
+        name,
+        'event',
+        'Event name must be PascalCase (e.g. AddToCart). '
+        'Use MarktagEvents constants instead of snake_case or camelCase.',
+      );
+    }
   }
 
   /// The name of the event.

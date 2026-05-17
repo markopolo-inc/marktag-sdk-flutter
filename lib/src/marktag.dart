@@ -160,7 +160,7 @@ class Marktag {
         return;
       }
       await _eventService?.markEvent(payload);
-    } catch (e) {
+    } on Object catch (e) {
       loggerService?.debugLog(
         'Error sending event: $e',
         error: e,

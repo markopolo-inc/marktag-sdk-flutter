@@ -55,7 +55,7 @@ void main() {
           event: 'TestEvent',
           pageUrl: 'https://test.com/page',
           items: [
-            MarktagEventItem(
+            const MarktagEventItem(
               id: 'test-id',
               name: 'Test Product',
               category: 'Test Category',
@@ -155,7 +155,7 @@ void main() {
         final testEvent = MarktagEvent(
           event: 'TestEvent',
           items: [
-            MarktagEventItem(
+            const MarktagEventItem(
               id: 'item-1',
             ),
           ],

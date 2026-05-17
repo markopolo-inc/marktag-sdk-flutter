@@ -113,7 +113,7 @@ class IPService {
       _ipInfo = IPInfo(ip: ip, loc: loc, uag: '');
       _logger.debugLog('IP info via ipapi.co. IP: $ip, LOC: $loc');
       return _ipInfo!;
-    } catch (e) {
+    } on Object catch (e) {
       _logger.debugLog('ipapi.co fetch failed: $e');
       return IPInfo(ip: '', loc: '', uag: '');
     }

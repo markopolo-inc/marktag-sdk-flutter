@@ -5,7 +5,7 @@ import 'package:marktag/marktag.dart';
 // Test toggle.
 //   true  → init with `tag + tagId` (client-side mode).
 //   false → init with `tag + serverId` (server-side mode).
-const _useClientSide = false;
+const _useClientSide = true;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

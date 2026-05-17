@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:marktag/src/marktag.dart';
 import 'package:marktag/src/services/logger_service.dart';
@@ -79,7 +81,7 @@ class MarktagNavigatorObserver extends RouteObserver<ModalRoute<dynamic>> {
       final screenName = nameExtractor(route.settings);
       if (screenName != null && screenName.isNotEmpty) {
         logger.debugLog('Navigated to: $screenName');
-        marktag.logPageView(screenName);
+        unawaited(marktag.logPageView(screenName));
       }
     } on Exception catch (error) {
       if (_onError != null) {

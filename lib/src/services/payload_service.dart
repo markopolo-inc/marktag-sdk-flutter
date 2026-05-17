@@ -44,6 +44,10 @@ class PayloadService {
   final IPService? _ipService;
   final String _sessionId;
 
+  /// Test-only getter for the configured [IPService]. Use only in tests.
+  @visibleForTesting
+  IPService? get ipService => _ipService;
+
   /// Creates a payload for a given [MarktagEvent].
   ///
   /// The payload includes user information, IP information, and event details.
@@ -73,7 +77,7 @@ class PayloadService {
         final ipInfo = await ipService.getIpInfo();
         cfIp = ipInfo.ip;
         cfLoc = ipInfo.loc;
-      } catch (e) {
+      } on Object catch (e) {
         logger.debugLog('Could not fetch IP info, sending empty values: $e');
       }
     }
