@@ -1,3 +1,9 @@
+## 2.0.0
+
+- Event names must be PascalCase (for example `AddToCart`, `PageView`). Snake_case and camelCase names throw `ArgumentError`.
+- Add `MarktagEvents` constants for standard event names.
+- Built-in helpers (`logLogin`, `logSearch`, `logSignup`, `logPageView`) use PascalCase event names aligned with the web SDK and server.
+
 ## 1.0.1
 
 - `Marktag.init` now accepts an optional `serverId` for server-side (mobile) mode. When provided, the SDK sends `isServer: true` and `serverId` in the payload so the server can resolve the tenant by `serverSide.serverId` instead of relying on host-only routing.

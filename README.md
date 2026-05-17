@@ -16,5 +16,5 @@ The visit the Marktag Docs to see how to integrate it in your project:
 
 ### [Marktag Docs](https://markopolo-inc.github.io/marktag-docs/)
 
-git tag v1.0.0
-git push origin v1.0.0
+git tag v2.0.0
+git push origin v2.0.0
