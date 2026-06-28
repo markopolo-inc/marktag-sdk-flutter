@@ -11,9 +11,9 @@ class PushNotificationTrackingService {
     required EventService eventService,
     required PayloadService payloadService,
     LoggerService? logger,
-  })  : _eventService = eventService,
-        _payloadService = payloadService,
-        _logger = logger ?? LoggerService(name: 'PushNotificationTracking');
+  }) : _eventService = eventService,
+       _payloadService = payloadService,
+       _logger = logger ?? LoggerService(name: 'PushNotificationTracking');
 
   final EventService _eventService;
   final PayloadService _payloadService;
@@ -25,8 +25,7 @@ class PushNotificationTrackingService {
         '[Markopolo] WARNING: Firebase is not initialized. '
         'Push notification tracking will be disabled. '
         'To enable it, call Firebase.initializeApp() before '
-        'Marktag.instance.init(). '
-        
+        'Marktag.instance.init(). ',
       );
       return;
     }

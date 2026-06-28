@@ -27,8 +27,9 @@ void main() {
     const testValue = 'testValue';
 
     test('setString stores value and logs', () async {
-      when(() => mockPrefs.setString(testKey, testValue))
-          .thenAnswer((_) async => true);
+      when(
+        () => mockPrefs.setString(testKey, testValue),
+      ).thenAnswer((_) async => true);
       when(() => mockLogger.debugLog(any())).thenReturn(null);
       final result = await storageService.setString(testKey, testValue);
       expect(result, isTrue);
@@ -73,23 +74,26 @@ void main() {
 
     test('creates service with default logger when none provided', () {
       // Just verifying that constructor doesn't throw an exception
-      expect(() => StorageService(sharedPreferences: MockSharedPreferences()),
+      expect(
+        () => StorageService(sharedPreferences: MockSharedPreferences()),
         returnsNormally,
       );
     });
 
-    test('uses SharedPreferences.getInstance() when no instance provided',
-        () async {
-      // Setup mock shared preferences
-      SharedPreferences.setMockInitialValues({'testKey': 'testValue'});
+    test(
+      'uses SharedPreferences.getInstance() when no instance provided',
+      () async {
+        // Setup mock shared preferences
+        SharedPreferences.setMockInitialValues({'testKey': 'testValue'});
 
-      // Create service with default SharedPreferences
-      storageService = StorageService(logger: MockLoggerService());
+        // Create service with default SharedPreferences
+        storageService = StorageService(logger: MockLoggerService());
 
-      // Proves default path uses SharedPreferences.
-      final result = await storageService.getString('testKey');
-      expect(result, 'testValue');
-    });
+        // Proves default path uses SharedPreferences.
+        final result = await storageService.getString('testKey');
+        expect(result, 'testValue');
+      },
+    );
 
     test('full integration with default implementations', () async {
       // Setup mock shared preferences

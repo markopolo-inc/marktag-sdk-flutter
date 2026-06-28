@@ -38,8 +38,7 @@ void main() {
       observer = MarktagNavigatorObserver(marktag: mockMarktag);
     });
 
-    tearDown(() {
-    });
+    tearDown(() {});
 
     test('constructor sets default extractors and filters correctly', () {
       expect(observer.nameExtractor, equals(defaultNameExtractor));
@@ -250,8 +249,9 @@ void main() {
 
         when(() => mockPageRoute.settings).thenReturn(mockRouteSettings);
         when(() => mockRouteSettings.name).thenReturn('error_route');
-        when(() => mockMarktag.logPageView(any()))
-            .thenThrow(Exception('Test error'));
+        when(
+          () => mockMarktag.logPageView(any()),
+        ).thenThrow(Exception('Test error'));
 
         // Execute
         errorObserver.didPush(mockPageRoute, null);

@@ -7,7 +7,7 @@ import 'package:uuid/uuid.dart';
 
 /// A service for managing the current user in the Marktag system.
 ///
-/// Provides methods to get and set the user, 
+/// Provides methods to get and set the user,
 /// persisting data using [StorageService].
 class UserService {
   /// Creates a [UserService] instance.
@@ -17,9 +17,9 @@ class UserService {
     StorageService? storageService,
     LoggerService? logger,
     Uuid? uuidGenerator,
-  })  : _storageService = storageService ?? StorageService(),
-        _logger = logger ?? LoggerService(name: 'UserService'),
-        _uuid = uuidGenerator ?? const Uuid();
+  }) : _storageService = storageService ?? StorageService(),
+       _logger = logger ?? LoggerService(name: 'UserService'),
+       _uuid = uuidGenerator ?? const Uuid();
 
   static const String _userKey = 'mt_user';
   final StorageService _storageService;
@@ -91,8 +91,12 @@ class UserService {
           name: name,
         );
       } else {
-        updatedUser =
-            User(muid: _uuid.v4(), email: email, phone: phone, name: name);
+        updatedUser = User(
+          muid: _uuid.v4(),
+          email: email,
+          phone: phone,
+          name: name,
+        );
       }
       await _storageService.setString(
         _userKey,

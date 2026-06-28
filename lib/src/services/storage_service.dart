@@ -7,10 +7,10 @@ class StorageService {
   /// Creates a [StorageService] with an optional [SharedPreferences] instance
   /// for testability.
   StorageService({SharedPreferences? sharedPreferences, LoggerService? logger})
-      : _logger = logger ?? LoggerService(name: 'StorageService'),
-        _sharedPreferencesFuture = sharedPreferences != null
-            ? Future.value(sharedPreferences)
-            : SharedPreferences.getInstance();
+    : _logger = logger ?? LoggerService(name: 'StorageService'),
+      _sharedPreferencesFuture = sharedPreferences != null
+          ? Future.value(sharedPreferences)
+          : SharedPreferences.getInstance();
 
   final LoggerService _logger;
   final Future<SharedPreferences> _sharedPreferencesFuture;

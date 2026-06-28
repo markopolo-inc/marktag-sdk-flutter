@@ -44,8 +44,8 @@ class IPService {
   IPService({
     http.Client? httpClient,
     LoggerService? logger,
-  })  : _httpClient = httpClient ?? http.Client(),
-        _logger = logger ?? LoggerService(name: 'IPService');
+  }) : _httpClient = httpClient ?? http.Client(),
+       _logger = logger ?? LoggerService(name: 'IPService');
   static IPInfo? _ipInfo;
   final http.Client _httpClient;
   final LoggerService _logger;

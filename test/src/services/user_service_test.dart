@@ -14,7 +14,7 @@ class MockUuid extends Mock implements Uuid {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  
+
   late MockStorageService storage;
   late MockLoggerService logger;
   late MockUuid uuid;
@@ -69,8 +69,9 @@ void main() {
 
       // Mock the storage to return a JSON string that will
       // be decoded to a non-generic Map
-      when(() => storage.getString(userKey))
-          .thenAnswer((_) async => '{"muid":"$testMuid"}');
+      when(
+        () => storage.getString(userKey),
+      ).thenAnswer((_) async => '{"muid":"$testMuid"}');
 
       // Force the JSON decoder to return our non-generic Map
       // We need to intercept the normal flow to test this specific case
@@ -79,8 +80,9 @@ void main() {
 
       // Now test with a modified JSON that we know will
       //trigger the else if branch
-      when(() => storage.getString(userKey))
-          .thenAnswer((_) async => '{"muid":["not","a","scalar"]}');
+      when(
+        () => storage.getString(userKey),
+      ).thenAnswer((_) async => '{"muid":["not","a","scalar"]}');
 
       // This should not throw an exception, as our
       //implementation handles this case
@@ -89,8 +91,9 @@ void main() {
 
     test('getUser returns user from storage', () async {
       UserService.clearCache();
-      when(() => storage.getString(userKey))
-          .thenAnswer((_) async => testUserJson);
+      when(
+        () => storage.getString(userKey),
+      ).thenAnswer((_) async => testUserJson);
       final user = await userService.getUser();
       expect(user, testUser);
       verify(() => logger.debugLog(any())).called(1);
@@ -108,8 +111,9 @@ void main() {
       UserService.clearCache();
       when(() => storage.getString(userKey)).thenAnswer((_) async => null);
       when(() => uuid.v4()).thenReturn(testMuid);
-      when(() => storage.setString(userKey, any()))
-          .thenAnswer((_) async => true);
+      when(
+        () => storage.setString(userKey, any()),
+      ).thenAnswer((_) async => true);
       final user = await userService.getUser();
       expect(user.muid, testMuid);
       expect(user.email, isNull);
@@ -120,10 +124,12 @@ void main() {
 
     test('setUser updates existing user', () async {
       UserService.clearCache();
-      when(() => storage.getString(userKey))
-          .thenAnswer((_) async => '{"muid":"$testMuid"}');
-      when(() => storage.setString(userKey, any()))
-          .thenAnswer((_) async => true);
+      when(
+        () => storage.getString(userKey),
+      ).thenAnswer((_) async => '{"muid":"$testMuid"}');
+      when(
+        () => storage.setString(userKey, any()),
+      ).thenAnswer((_) async => true);
       await userService.setUser(email: testEmail, phone: testPhone);
       verify(() => storage.setString(userKey, any())).called(1);
       final logCalls = verify(() => logger.debugLog(captureAny())).captured;
@@ -137,8 +143,9 @@ void main() {
       UserService.clearCache();
       when(() => storage.getString(userKey)).thenAnswer((_) async => null);
       when(() => uuid.v4()).thenReturn(testMuid);
-      when(() => storage.setString(userKey, any()))
-          .thenAnswer((_) async => true);
+      when(
+        () => storage.setString(userKey, any()),
+      ).thenAnswer((_) async => true);
       await userService.setUser(email: testEmail, phone: testPhone);
       verify(() => storage.setString(userKey, any())).called(1);
       final logCalls = verify(() => logger.debugLog(captureAny())).captured;
@@ -184,8 +191,9 @@ void main() {
     test('_decodeJson throws FormatException for non-Map JSON', () async {
       UserService.clearCache();
       // Test with a JSON that decodes to a non-Map value
-      when(() => storage.getString(userKey))
-          .thenAnswer((_) async => '"just a string"');
+      when(
+        () => storage.getString(userKey),
+      ).thenAnswer((_) async => '"just a string"');
 
       expect(() => userService.getUser(), throwsA(isA<FormatException>()));
     });

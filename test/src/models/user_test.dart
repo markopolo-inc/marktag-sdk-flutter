@@ -11,8 +11,11 @@ void main() {
     });
 
     test('can be constructed with all fields', () {
-      const user =
-          User(muid: 'abc123', email: 'test@example.com', phone: '12345');
+      const user = User(
+        muid: 'abc123',
+        email: 'test@example.com',
+        phone: '12345',
+      );
       expect(user.muid, 'abc123');
       expect(user.email, 'test@example.com');
       expect(user.phone, '12345');

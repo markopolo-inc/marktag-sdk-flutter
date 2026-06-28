@@ -1,4 +1,4 @@
-/// Represents an item involved in a Marktag event, 
+/// Represents an item involved in a Marktag event,
 /// such as a product in a cart or purchase.
 class MarktagEventItem {
   /// Creates a [MarktagEventItem].
@@ -59,24 +59,24 @@ class MarktagEventItem {
 
   /// Any monetary discount added to the product
   /// e.g., if 5 USD discount is added, discount value should be 5.00.
-  /// If any percentage discount is added, 
+  /// If any percentage discount is added,
   /// you need to convert the percentage to monetary value
   final double? discount;
 
   /// Converts this [MarktagEventItem] to a JSON map.
   Map<String, dynamic> toJson() => {
-        if (id != null) 'id': id,
-        if (name != null) 'name': name,
-        if (category != null) 'category': category,
-        if (variant != null) 'variant': variant,
-        if (quantity != null) 'quantity': quantity,
-        if (price != null) 'price': price,
-        if (description != null) 'description': description,
-        if (coupon != null) 'coupon': coupon,
-        if (discount != null) 'discount': discount,
-      };
+    if (id != null) 'id': id,
+    if (name != null) 'name': name,
+    if (category != null) 'category': category,
+    if (variant != null) 'variant': variant,
+    if (quantity != null) 'quantity': quantity,
+    if (price != null) 'price': price,
+    if (description != null) 'description': description,
+    if (coupon != null) 'coupon': coupon,
+    if (discount != null) 'discount': discount,
+  };
 
-  /// Returns a copy of this item with the given fields 
+  /// Returns a copy of this item with the given fields
   /// replaced with new values.
   MarktagEventItem copyWith({
     String? id,
@@ -169,7 +169,7 @@ class MarktagEvent {
         name,
         'event',
         'Event name must be PascalCase (e.g. AddToCart). '
-        'Use MarktagEvents constants instead of snake_case or camelCase.',
+            'Use MarktagEvents constants instead of snake_case or camelCase.',
       );
     }
   }
@@ -200,17 +200,17 @@ class MarktagEvent {
 
   /// Converts this [MarktagEvent] to a JSON map.
   Map<String, dynamic> toJson() => {
-        'event': event,
-        if (eventSource != null) 'event_source': eventSource,
-        if (pageUrl != null) 'pageUrl': pageUrl,
-        if (email != null) 'email': email,
-        if (phone != null) 'phone': phone,
-        if (mtRefSrc != null) 'mt_ref_src': mtRefSrc,
-        if (items != null) 'items': items!.map((e) => e.toJson()).toList(),
-        if (metadata != null) 'metadata': metadata,
-      };
+    'event': event,
+    if (eventSource != null) 'event_source': eventSource,
+    if (pageUrl != null) 'pageUrl': pageUrl,
+    if (email != null) 'email': email,
+    if (phone != null) 'phone': phone,
+    if (mtRefSrc != null) 'mt_ref_src': mtRefSrc,
+    if (items != null) 'items': items!.map((e) => e.toJson()).toList(),
+    if (metadata != null) 'metadata': metadata,
+  };
 
-  /// Returns a copy of this event with the given fields 
+  /// Returns a copy of this event with the given fields
   /// replaced with new values.
   MarktagEvent copyWith({
     String? event,

@@ -81,8 +81,9 @@ void main() {
         ).thenAnswer(
           (_) async => http.Response('{"error": "Bad Request"}', 400),
         );
-        when(() => mockLogger.debugLog(any(), error: any(named: 'error')))
-            .thenReturn(null);
+        when(
+          () => mockLogger.debugLog(any(), error: any(named: 'error')),
+        ).thenReturn(null);
         when(() => mockLogger.debugLog(any())).thenReturn(null);
 
         await expectLater(
@@ -112,8 +113,9 @@ void main() {
             body: any(named: 'body'),
           ),
         ).thenThrow(testException);
-        when(() => mockLogger.debugLog(any(), error: any(named: 'error')))
-            .thenReturn(null);
+        when(
+          () => mockLogger.debugLog(any(), error: any(named: 'error')),
+        ).thenReturn(null);
         when(() => mockLogger.debugLog(any())).thenReturn(null);
 
         await expectLater(
@@ -121,8 +123,9 @@ void main() {
           throwsA(testException),
         );
 
-        verify(() => mockLogger.debugLog(any(), error: testException))
-            .called(1);
+        verify(
+          () => mockLogger.debugLog(any(), error: testException),
+        ).called(1);
       });
     });
   });

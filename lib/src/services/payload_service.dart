@@ -21,10 +21,10 @@ class PayloadService {
     IPService? ipService,
     LoggerService? logger,
     @visibleForTesting Future<String?> Function()? resolveDeviceId,
-  })  : _resolveDeviceId = resolveDeviceId,
-        _ipService = ipService,
-        _sessionId = const Uuid().v4(),
-        logger = logger ?? LoggerService(name: 'PayloadService');
+  }) : _resolveDeviceId = resolveDeviceId,
+       _ipService = ipService,
+       _sessionId = const Uuid().v4(),
+       logger = logger ?? LoggerService(name: 'PayloadService');
 
   /// The service used to fetch user information.
   final UserService userService;

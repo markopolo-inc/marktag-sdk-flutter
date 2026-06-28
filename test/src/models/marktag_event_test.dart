@@ -88,7 +88,7 @@ void main() {
             'description': 'A blue shirt',
             'coupon': 'COUPON',
             'discount': 3.0,
-          }
+          },
         ],
         'metadata': {'foo': 'bar', 'baz': 1},
       };
@@ -109,8 +109,10 @@ void main() {
       final event = MarktagEvent(
         event: 'AddToCart',
       );
-      final updated =
-          event.copyWith(event: 'Purchase', email: 'test@example.com');
+      final updated = event.copyWith(
+        event: 'Purchase',
+        email: 'test@example.com',
+      );
       expect(updated.event, 'Purchase');
       expect(updated.pageUrl, isNull);
       expect(updated.email, 'test@example.com');

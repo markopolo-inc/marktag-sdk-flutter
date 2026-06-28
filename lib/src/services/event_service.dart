@@ -15,8 +15,8 @@ class EventService {
     this.tagId,
     LoggerService? logger,
     http.Client? httpClient,
-  })  : _httpClient = httpClient ?? http.Client(),
-        logger = logger ?? LoggerService(name: 'EventService');
+  }) : _httpClient = httpClient ?? http.Client(),
+       logger = logger ?? LoggerService(name: 'EventService');
 
   /// The MarkTag server tag/domain.
   final String tag;

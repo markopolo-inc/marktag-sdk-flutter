@@ -32,8 +32,10 @@ class Marktag {
     String? serverId,
     bool? enableLogging,
   }) {
-    loggerService =
-        LoggerService(name: 'Marktag', enabled: enableLogging ?? true);
+    loggerService = LoggerService(
+      name: 'Marktag',
+      enabled: enableLogging ?? true,
+    );
     if (!RegExp(r'^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$').hasMatch(tag)) {
       loggerService?.debugLog(
         'Invalid tag: $tag.'
@@ -47,8 +49,7 @@ class Marktag {
       storageService: storageService,
       logger: loggerService,
     );
-    _eventService =
-        EventService(tag: tag, tagId: tagId, logger: loggerService);
+    _eventService = EventService(tag: tag, tagId: tagId, logger: loggerService);
     _payloadService = PayloadService(
       userService: _userService,
       tagId: tagId,
