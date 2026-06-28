@@ -4,6 +4,7 @@ import 'package:marktag/src/services/event_service.dart';
 import 'package:marktag/src/services/ip_service.dart';
 import 'package:marktag/src/services/logger_service.dart';
 import 'package:marktag/src/services/payload_service.dart';
+import 'package:marktag/src/services/push_notification_tracking_service.dart';
 import 'package:marktag/src/services/storage_service.dart';
 import 'package:marktag/src/services/user_service.dart';
 
@@ -55,6 +56,7 @@ class Marktag {
       ipService: IPService(logger: loggerService),
       logger: loggerService,
     );
+    _initNotificationTracking();
   }
 
   String? _tag;
@@ -70,6 +72,9 @@ class Marktag {
 
   /// The [UserService] instance.
   late UserService _userService;
+
+  /// The [PushNotificationTrackingService] instance.
+  PushNotificationTrackingService? _pushTrackingService;
 
   /// Logs an event to the Marktag server.
   Future<void> logEvent(MarktagEvent event) async {
@@ -144,6 +149,19 @@ class Marktag {
     );
     final payload = await _payloadService?.createPayload(event);
     await _sendEvent(payload);
+  }
+
+  void _initNotificationTracking() {
+    final eventService = _eventService;
+    final payloadService = _payloadService;
+    if (eventService == null || payloadService == null) return;
+
+    _pushTrackingService = PushNotificationTrackingService(
+      eventService: eventService,
+      payloadService: payloadService,
+      logger: loggerService,
+    );
+    _pushTrackingService!.initialize();
   }
 
   /// Sends an event to the Marktag server.
