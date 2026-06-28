@@ -1,3 +1,8 @@
+## 2.0.3
+
+- Add push notification open tracking via `PushNotificationTrackingService`.
+- Widen Firebase dependency ranges for better compatibility with client apps.
+
 ## 2.0.2
 
 - Remove `dependency_overrides` so pub publish validation passes.
