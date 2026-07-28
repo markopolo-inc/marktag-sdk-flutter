@@ -143,16 +143,19 @@ class PayloadService {
         DateTime.fromMillisecondsSinceEpoch(campaignContext.capturedAtMs),
       );
       attribution = {
-        'utm': {
-          'utm_campaign': campaignContext.campaignId,
-          'utm_medium': 'push',
-          'utm_source': 'markopolo',
-          'utm_content': campaignContext.contentId,
-          'utm_node': campaignContext.nodeId,
+        'mtc': {
+          'params': {
+            'mtc_campaign': campaignContext.campaignId,
+            if (campaignContext.contentId.isNotEmpty)
+              'mtc_content': campaignContext.contentId,
+            if (campaignContext.nodeId.isNotEmpty)
+              'mtc_node': campaignContext.nodeId,
+            'mtc_channel': 'push',
+          },
+          'is_same_session': campaignContext.msid == _msid,
+          'minutes_since_click': elapsed.inMinutes,
+          'days_since_click': elapsed.inDays,
         },
-        'is_same_session': campaignContext.msid == _msid,
-        'minutes_since_click': elapsed.inMinutes,
-        'days_since_click': elapsed.inDays,
       };
     }
     final payload = <String, dynamic>{

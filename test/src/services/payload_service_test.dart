@@ -510,18 +510,59 @@ void main() {
         );
 
         expect(result['attribution'], {
-          'utm': {
-            'utm_campaign': 'camp_789',
-            'utm_medium': 'push',
-            'utm_source': 'markopolo',
-            'utm_content': 'content_abc',
-            'utm_node': 'node_1',
+          'mtc': {
+            'params': {
+              'mtc_campaign': 'camp_789',
+              'mtc_content': 'content_abc',
+              'mtc_node': 'node_1',
+              'mtc_channel': 'push',
+            },
+            'is_same_session': true,
+            'minutes_since_click': 5,
+            'days_since_click': 0,
           },
-          'is_same_session': true,
-          'minutes_since_click': 5,
-          'days_since_click': 0,
         });
       });
+
+      test(
+        'omits mtc_content/mtc_node from params when empty',
+        () async {
+          final now = DateTime(2026, 1, 10, 12);
+          final capturedAt = now.subtract(const Duration(minutes: 5));
+          final localPayloadService = PayloadService(
+            userService: mockUserService,
+            ipService: mockIPService,
+            logger: mockLogger,
+            campaignAttributionService: mockCampaignAttributionService,
+            resolveDeviceId: () async => null,
+            uuidGenerator: mockUuid,
+            now: () => now,
+          );
+          final context = CampaignContext(
+            campaignId: 'camp_789',
+            contentId: '',
+            nodeId: '',
+            capturedAtMs: capturedAt.millisecondsSinceEpoch,
+            msid: localPayloadService.currentMsid,
+          );
+          when(
+            () => mockCampaignAttributionService.getActiveContext(),
+          ).thenAnswer((_) async => context);
+
+          final result = await localPayloadService.createPayload(
+            MarktagEvent(event: 'Purchase'),
+          );
+
+          expect(result['attribution'], {
+            'mtc': {
+              'params': {'mtc_campaign': 'camp_789', 'mtc_channel': 'push'},
+              'is_same_session': true,
+              'minutes_since_click': 5,
+              'days_since_click': 0,
+            },
+          });
+        },
+      );
 
       test('is_same_session is false when stored msid differs', () async {
         final now = DateTime(2026, 1, 10, 12);
@@ -550,7 +591,9 @@ void main() {
           MarktagEvent(event: 'Purchase'),
         );
 
-        final attribution = result['attribution'] as Map<String, dynamic>;
+        final attribution =
+            (result['attribution'] as Map<String, dynamic>)['mtc']
+                as Map<String, dynamic>;
         expect(attribution['is_same_session'], isFalse);
         expect(attribution['days_since_click'], 3);
       });
