@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+import 'package:marktag/src/services/campaign_attribution_service.dart';
 import 'package:marktag/src/services/event_service.dart';
 import 'package:marktag/src/services/logger_service.dart';
 import 'package:marktag/src/services/payload_service.dart';
@@ -10,13 +11,16 @@ class PushNotificationTrackingService {
   PushNotificationTrackingService({
     required EventService eventService,
     required PayloadService payloadService,
+    required CampaignAttributionService campaignAttributionService,
     LoggerService? logger,
   }) : _eventService = eventService,
        _payloadService = payloadService,
+       _campaignAttributionService = campaignAttributionService,
        _logger = logger ?? LoggerService(name: 'PushNotificationTracking');
 
   final EventService _eventService;
   final PayloadService _payloadService;
+  final CampaignAttributionService _campaignAttributionService;
   final LoggerService _logger;
 
   void initialize() {
@@ -54,6 +58,13 @@ class PushNotificationTrackingService {
     });
   }
 
+  /// Test-only entry point for [_trackNotificationEvent]. Use only in tests.
+  @visibleForTesting
+  Future<void> trackNotificationEventForTest(
+    RemoteMessage message,
+    String eventType,
+  ) => _trackNotificationEvent(message, eventType);
+
   Future<void> _trackNotificationEvent(
     RemoteMessage message,
     String eventType,
@@ -80,6 +91,17 @@ class PushNotificationTrackingService {
 
       final payload = await _payloadService.createPayload(event);
       await _eventService.markEvent(payload);
+
+      try {
+        await _campaignAttributionService.recordClick(
+          campaignId: (data['campaignId'] as String?) ?? '',
+          contentId: (data['contentId'] as String?) ?? '',
+          nodeId: (data['nodeId'] as String?) ?? '',
+          msid: _payloadService.currentMsid,
+        );
+      } on Object catch (e) {
+        _logger.debugLog('Error recording campaign click: $e', error: e);
+      }
 
       _logger.debugLog(
         'Push notification $eventType event tracked for '

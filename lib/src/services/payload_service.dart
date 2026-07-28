@@ -1,6 +1,8 @@
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
+import 'package:marktag/src/models/campaign_context.dart';
 import 'package:marktag/src/models/marktag_event.dart';
+import 'package:marktag/src/services/campaign_attribution_service.dart';
 import 'package:marktag/src/services/ip_service.dart';
 import 'package:marktag/src/services/logger_service.dart';
 import 'package:marktag/src/services/user_service.dart';
@@ -20,11 +22,23 @@ class PayloadService {
     this.serverId,
     IPService? ipService,
     LoggerService? logger,
+    CampaignAttributionService? campaignAttributionService,
     @visibleForTesting Future<String?> Function()? resolveDeviceId,
+    @visibleForTesting Uuid? uuidGenerator,
+    @visibleForTesting DateTime Function()? now,
+    @visibleForTesting Duration? sessionTimeout,
   }) : _resolveDeviceId = resolveDeviceId,
        _ipService = ipService,
-       _sessionId = const Uuid().v4(),
+       _uuid = uuidGenerator ?? const Uuid(),
+       _sessionId = (uuidGenerator ?? const Uuid()).v4(),
+       _msid = (uuidGenerator ?? const Uuid()).v4(),
+       _now = now ?? DateTime.now,
+       _sessionTimeout = sessionTimeout ?? _defaultSessionTimeout,
+       _campaignAttributionService =
+           campaignAttributionService ?? CampaignAttributionService(),
        logger = logger ?? LoggerService(name: 'PayloadService');
+
+  static const Duration _defaultSessionTimeout = Duration(minutes: 30);
 
   /// The service used to fetch user information.
   final UserService userService;
@@ -42,17 +56,52 @@ class PayloadService {
 
   final Future<String?> Function()? _resolveDeviceId;
   final IPService? _ipService;
+  final CampaignAttributionService _campaignAttributionService;
+  final Uuid _uuid;
+  final DateTime Function() _now;
+  final Duration _sessionTimeout;
+
+  /// A per-process id, minted once when this [PayloadService] is
+  /// constructed and never rotated. Distinct from [currentMsid], which
+  /// rotates on inactivity.
   final String _sessionId;
+
+  /// The current activity-session id. Rotates in [createPayload] once more
+  /// than [_sessionTimeout] has elapsed since the last tracked event.
+  String _msid;
+
+  /// `null` until the first [createPayload] call in this process.
+  DateTime? _lastEventAt;
 
   /// Test-only getter for the configured [IPService]. Use only in tests.
   @visibleForTesting
   IPService? get ipService => _ipService;
+
+  /// The current (possibly just-rotated) activity-session id.
+  ///
+  /// Reading this does not itself trigger rotation — only [createPayload]
+  /// does.
+  String get currentMsid => _msid;
+
+  void _rotateMsidIfNeeded(DateTime now) {
+    final lastEventAt = _lastEventAt;
+    if (lastEventAt != null && now.difference(lastEventAt) > _sessionTimeout) {
+      _msid = _uuid.v4();
+    }
+    _lastEventAt = now;
+  }
 
   /// Creates a payload for a given [MarktagEvent].
   ///
   /// The payload includes user information, IP information, and event details.
   /// Returns a [Future] that completes with the payload as a [Map].
   Future<Map<String, dynamic>> createPayload(MarktagEvent event) async {
+    // Captured once, before any await: keeps the rotation decision and the
+    // is_same_session/*_since_click fields below self-consistent even if a
+    // slow network call (e.g. getIpInfo()) straddles the session boundary.
+    final now = _now();
+    _rotateMsidIfNeeded(now);
+
     if (event.email != null || event.phone != null) {
       await userService.setUser(
         email: event.email,
@@ -82,6 +131,30 @@ class PayloadService {
       }
     }
     final hasServerId = serverId != null && serverId!.isNotEmpty;
+    CampaignContext? campaignContext;
+    try {
+      campaignContext = await _campaignAttributionService.getActiveContext();
+    } on Object catch (e) {
+      logger.debugLog('Could not read campaign context: $e');
+    }
+    Map<String, dynamic>? attribution;
+    if (campaignContext != null) {
+      final elapsed = now.difference(
+        DateTime.fromMillisecondsSinceEpoch(campaignContext.capturedAtMs),
+      );
+      attribution = {
+        'utm': {
+          'utm_campaign': campaignContext.campaignId,
+          'utm_medium': 'push',
+          'utm_source': 'markopolo',
+          'utm_content': campaignContext.contentId,
+          'utm_node': campaignContext.nodeId,
+        },
+        'is_same_session': campaignContext.msid == _msid,
+        'minutes_since_click': elapsed.inMinutes,
+        'days_since_click': elapsed.inDays,
+      };
+    }
     final payload = <String, dynamic>{
       'event_source': kIsWeb ? 'web' : 'mobile',
       if (isClientMode) 'clientId': tagId,
@@ -92,7 +165,8 @@ class PayloadService {
       if (!isClientMode) 'x-cf-loc': cfLoc,
       'muid': deviceId,
       'sessionId': _sessionId,
-      'msid': const Uuid().v4(),
+      'msid': _msid,
+      'attribution': ?attribution,
       ...user.toJson(),
       'event': event.event,
       'pageUrl': event.pageUrl,
