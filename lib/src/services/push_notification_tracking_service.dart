@@ -1,13 +1,17 @@
+import 'dart:async';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+import 'package:marktag/src/models/marktag_event.dart';
 import 'package:marktag/src/services/campaign_attribution_service.dart';
 import 'package:marktag/src/services/event_service.dart';
 import 'package:marktag/src/services/logger_service.dart';
 import 'package:marktag/src/services/payload_service.dart';
-import 'package:marktag/src/models/marktag_event.dart';
 
+/// Tracks Marktag attribution events from opened push notifications.
 class PushNotificationTrackingService {
+  /// Creates a [PushNotificationTrackingService].
   PushNotificationTrackingService({
     required EventService eventService,
     required PayloadService payloadService,
@@ -23,6 +27,8 @@ class PushNotificationTrackingService {
   final CampaignAttributionService _campaignAttributionService;
   final LoggerService _logger;
 
+  /// Attaches the Firebase Messaging listeners used for attribution
+  /// tracking. No-op if Firebase has not been initialized.
   void initialize() {
     if (Firebase.apps.isEmpty) {
       debugPrint(
@@ -38,7 +44,7 @@ class PushNotificationTrackingService {
       final messaging = FirebaseMessaging.instance;
       _attachNotificationListeners(messaging);
       _logger.debugLog('Push notification tracking initialized');
-    } catch (e) {
+    } on Object catch (e) {
       debugPrint(
         '[Markopolo] Firebase not available, '
         'skipping notification tracking: $e',
@@ -47,15 +53,17 @@ class PushNotificationTrackingService {
   }
 
   void _attachNotificationListeners(FirebaseMessaging messaging) {
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      _trackNotificationEvent(message, 'opened');
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      unawaited(_trackNotificationEvent(message, 'opened'));
     });
 
-    messaging.getInitialMessage().then((RemoteMessage? message) {
-      if (message != null) {
-        _trackNotificationEvent(message, 'opened');
-      }
-    });
+    unawaited(
+      messaging.getInitialMessage().then((message) {
+        if (message != null) {
+          unawaited(_trackNotificationEvent(message, 'opened'));
+        }
+      }),
+    );
   }
 
   /// Test-only entry point for [_trackNotificationEvent]. Use only in tests.

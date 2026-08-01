@@ -92,7 +92,7 @@ class Marktag {
   late UserService _userService;
 
   /// The [PushNotificationTrackingService] instance.
-  PushNotificationTrackingService? _pushTrackingService;
+  late PushNotificationTrackingService _pushTrackingService;
 
   /// Test-only getter for whether [init] has already run. Use only in tests.
   @visibleForTesting
@@ -193,7 +193,7 @@ class Marktag {
       campaignAttributionService: campaignAttributionService,
       logger: loggerService,
     );
-    _pushTrackingService!.initialize();
+    _pushTrackingService.initialize();
   }
 
   /// Sends an event to the Marktag server.
