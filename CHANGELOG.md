@@ -1,3 +1,7 @@
+## Unreleased
+
+- Push-notification attribution payload now nests campaign data under `mtc` (`mtc_campaign`, `mtc_content`, `mtc_node`, `mtc_channel`) instead of `utm`, matching the web SDK's attribution structure.
+
 ## 2.0.3
 
 - Add push notification open tracking via `PushNotificationTrackingService`.

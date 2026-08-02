@@ -1,5 +1,6 @@
 import 'package:marktag/src/models/marktag_event.dart';
 import 'package:marktag/src/models/marktag_events.dart';
+import 'package:marktag/src/services/campaign_attribution_service.dart';
 import 'package:marktag/src/services/event_service.dart';
 import 'package:marktag/src/services/ip_service.dart';
 import 'package:marktag/src/services/logger_service.dart';
@@ -7,6 +8,7 @@ import 'package:marktag/src/services/payload_service.dart';
 import 'package:marktag/src/services/push_notification_tracking_service.dart';
 import 'package:marktag/src/services/storage_service.dart';
 import 'package:marktag/src/services/user_service.dart';
+import 'package:meta/meta.dart';
 
 /// Flutter SDK for Marktag.
 class Marktag {
@@ -32,6 +34,13 @@ class Marktag {
     String? serverId,
     bool? enableLogging,
   }) {
+    if (_payloadService != null) {
+      loggerService?.debugLog(
+        'Marktag.instance.init() was already called; ignoring this '
+        'repeated call. init() may only run once per app process.',
+      );
+      return;
+    }
     loggerService = LoggerService(
       name: 'Marktag',
       enabled: enableLogging ?? true,
@@ -50,12 +59,17 @@ class Marktag {
       logger: loggerService,
     );
     _eventService = EventService(tag: tag, tagId: tagId, logger: loggerService);
+    _campaignAttributionService = CampaignAttributionService(
+      storageService: storageService,
+      logger: loggerService,
+    );
     _payloadService = PayloadService(
       userService: _userService,
       tagId: tagId,
       serverId: serverId,
       ipService: IPService(logger: loggerService),
       logger: loggerService,
+      campaignAttributionService: _campaignAttributionService,
     );
     _initNotificationTracking();
   }
@@ -68,6 +82,9 @@ class Marktag {
   /// The [PayloadService] instance.
   PayloadService? _payloadService;
 
+  /// The [CampaignAttributionService] instance.
+  CampaignAttributionService? _campaignAttributionService;
+
   /// The [LoggerService] instance.
   LoggerService? loggerService;
 
@@ -75,7 +92,15 @@ class Marktag {
   late UserService _userService;
 
   /// The [PushNotificationTrackingService] instance.
-  PushNotificationTrackingService? _pushTrackingService;
+  late PushNotificationTrackingService _pushTrackingService;
+
+  /// Test-only getter for whether [init] has already run. Use only in tests.
+  @visibleForTesting
+  bool get isInitializedForTest => _payloadService != null;
+
+  /// Test-only getter for the configured tag. Use only in tests.
+  @visibleForTesting
+  String? get tagForTest => _tag;
 
   /// Logs an event to the Marktag server.
   Future<void> logEvent(MarktagEvent event) async {
@@ -155,14 +180,20 @@ class Marktag {
   void _initNotificationTracking() {
     final eventService = _eventService;
     final payloadService = _payloadService;
-    if (eventService == null || payloadService == null) return;
+    final campaignAttributionService = _campaignAttributionService;
+    if (eventService == null ||
+        payloadService == null ||
+        campaignAttributionService == null) {
+      return;
+    }
 
     _pushTrackingService = PushNotificationTrackingService(
       eventService: eventService,
       payloadService: payloadService,
+      campaignAttributionService: campaignAttributionService,
       logger: loggerService,
     );
-    _pushTrackingService!.initialize();
+    _pushTrackingService.initialize();
   }
 
   /// Sends an event to the Marktag server.
