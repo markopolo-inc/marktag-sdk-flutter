@@ -1,3 +1,8 @@
+## 2.1.4
+
+- Documentation: add a "Publishing a new version" guide to the README.
+- CI: publish to pub.dev from `v*.*.*` tags via OIDC.
+
 ## 2.0.4
 
 - Push-notification attribution payload now nests campaign data under `mtc` (`mtc_campaign`, `mtc_content`, `mtc_node`, `mtc_channel`) instead of `utm`, matching the web SDK's attribution structure.
