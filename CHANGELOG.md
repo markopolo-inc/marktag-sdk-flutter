@@ -1,6 +1,7 @@
-## Unreleased
+## 2.0.4
 
 - Push-notification attribution payload now nests campaign data under `mtc` (`mtc_campaign`, `mtc_content`, `mtc_node`, `mtc_channel`) instead of `utm`, matching the web SDK's attribution structure.
+- `msid` is recalculated after 30 minutes of inactivity, the marktag init call is now idempotent, and attribution is passed with all events after click.
 
 ## 2.0.3
 
