@@ -1,3 +1,7 @@
+## 2.1.5
+
+- Maintenance release.
+
 ## 2.1.4
 
 - Documentation: add a "Publishing a new version" guide to the README.
